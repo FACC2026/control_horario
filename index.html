@@ -286,7 +286,16 @@ const TIPOS=[{id:'vac',label:'Vacaciones',cls:'vac',icon:'🏖'},{id:'prop',labe
 const TIPO_LABEL={indefinido:'Indefinido',temporal:'Temporal',fijo_discontinuo:'Fijo discontinuo'};
 let empleados=[],empActual=null,fichajeActivo=null,tipoSel=null,paginaActual='fichar';
 const pad=n=>String(n).padStart(2,'0');
-const fmtHM=d=>{const dt=new Date(d);return pad(dt.getHours())+':'+pad(dt.getMinutes())};
+const fmtHM=d=>{
+  // Convertir a hora local de España correctamente
+  const dt=new Date(d);
+  return pad(dt.getHours())+':'+pad(dt.getMinutes());
+};
+// Extraer fecha local de un timestamp de Supabase (evita el bug de UTC)
+const fechaDeTS=ts=>{
+  const dt=new Date(ts);
+  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+};
 const fmtDate=d=>d?new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}):'—';
 const horasDiff=(a,b)=>(new Date(b)-new Date(a))/3600000;
 const initials=n=>(n||'?').split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase();
@@ -463,7 +472,7 @@ async function cargarUltimosFichajes(){
     const h=r.salida?horasDiff(r.entrada,r.salida):null;
     const ok=h&&h>=jornada-0.25;
     const c=r.contrato_id?contratoMap[r.contrato_id]:null;
-    return`<tr><td>${fmtDate(r.entrada.split('T')[0])}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td>${h?'<span class="'+(ok?'horas-ok':'horas-ko')+'">'+h.toFixed(1)+'h</span>':'—'}</td><td style="font-size:11px;color:var(--text3)">${c?c.horas_semanales+'h/sem':'—'}</td></tr>`;
+    return`<tr><td>${fmtDate(fechaDeTS(r.entrada))}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td>${h?'<span class="'+(ok?'horas-ok':'horas-ko')+'">'+h.toFixed(1)+'h</span>':'—'}</td><td style="font-size:11px;color:var(--text3)">${c?c.horas_semanales+'h/sem':'—'}</td></tr>`;
   }).join('');
 }
 
@@ -502,7 +511,7 @@ async function cargarRegistro(){
     const cDia=r.contrato_id?todosContratos.find(c=>c.id===r.contrato_id):null;
     const jornadaDia=cDia?(cDia.horas_semanales/5):8;
     const ok=h&&h>=jornadaDia-0.25;
-    return`<tr><td>${fmtDate(r.entrada.split('T')[0])}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td><td><span class="badge ${ok?'b-aprobada':'b-denegada'}">${ok?'ok':'incompleto'}</span></td><td><button class="btn sm" style="padding:3px 8px;font-size:11px" onclick="abrirIncidenciaDesdeRegistro('${r.entrada.split('T')[0]}','${r.id}')">⚠ Incidencia</button></td></tr>`}).join('');
+    return`<tr><td>${fmtDate(fechaDeTS(r.entrada))}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td><td><span class="badge ${ok?'b-aprobada':'b-denegada'}">${ok?'ok':'incompleto'}</span></td><td><button class="btn sm" style="padding:3px 8px;font-size:11px" onclick="abrirIncidenciaDesdeRegistro('${fechaDeTS(r.entrada)}','${r.id}')">⚠ Incidencia</button></td></tr>`}).join('');
   const iniMesR=new Date(mes.getFullYear(),mes.getMonth(),1);
   const finMesR=new Date(mes.getFullYear(),mes.getMonth()+1,0);
   const prev=calcHorasMes(todosContratos,iniMesR,finMesR);
@@ -740,7 +749,7 @@ async function exportarCSV(){
     const mis=incMap[f.id]||[];
     if(mis.length){
       mis.forEach(i=>{
-        rows.push([emp.nombre,fmtDate(f.entrada.split('T')[0]),fmtHM(f.entrada),f.salida?fmtHM(f.salida):'—',h,
+        rows.push([emp.nombre,fmtDate(fechaDeTS(f.entrada)),fmtHM(f.entrada),f.salida?fmtHM(f.salida):'—',h,
           TIPO_INC_LABEL[i.tipo]||i.tipo,
           i.hora_anterior?fmtHM(i.hora_anterior):'sin fichaje previo',
           MOTIVOS_LABEL[i.motivo]||i.motivo,
@@ -748,7 +757,7 @@ async function exportarCSV(){
           i.aplicada_en?fmtHM(i.aplicada_en):'']);
       });
     } else {
-      rows.push([emp.nombre,fmtDate(f.entrada.split('T')[0]),fmtHM(f.entrada),f.salida?fmtHM(f.salida):'—',h,'','','','','']);
+      rows.push([emp.nombre,fmtDate(fechaDeTS(f.entrada)),fmtHM(f.entrada),f.salida?fmtHM(f.salida):'—',h,'','','','','']);
     }
   });
 
@@ -907,7 +916,7 @@ async function cargarMisIncidencias(){
           <span class="badge b-${i.estado}">${i.estado}</span>
         </div>
         <div class="perm-sub">
-          ${fmtDate(i.hora_correcta.split('T')[0])} · hora correcta: ${fmtHM(i.hora_correcta)}
+          ${fmtDate(fechaDeTS(i.hora_correcta))} · hora correcta: ${fmtHM(i.hora_correcta)}
           ${i.hora_incorrecta?' · anterior: '+fmtHM(i.hora_incorrecta):''}
           ${i.comentario?' · '+i.comentario:''}
         </div>
