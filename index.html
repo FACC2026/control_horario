@@ -444,9 +444,11 @@ async function cargarStatsEmp(){
   const prev=calcHorasMes(todosContratos,iniMes,finMes);
   const prevHastaHoy=calcHorasHasta(todosContratos,iniMes);
   const saldo=tot-prevHastaHoy;
+  const saldoMes=tot-prev;
   document.getElementById('statsEmp').innerHTML=`
     <div class="stat-card"><div class="lbl">Horas este mes</div><div class="val">${tot.toFixed(0)}h</div><div class="sub">de ${prev.toFixed(0)}h previstas en el mes</div></div>
     <div class="stat-card"><div class="lbl">Saldo hasta hoy</div><div class="val" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo.toFixed(1)}h</div><div class="sub">${prevHastaHoy.toFixed(0)}h debidas hasta hoy</div></div>
+    <div class="stat-card"><div class="lbl">Quedan para el mes</div><div class="val" style="color:${saldoMes>=0?'var(--green)':'var(--red)'}">${saldoMes>=0?'+':''}${saldoMes.toFixed(1)}h</div><div class="sub">sobre el total del mes</div></div>
     <div class="stat-card"><div class="lbl">Jornada semanal</div><div class="val">${contrato?contrato.horas_semanales:'—'}</div><div class="sub">${contrato?'horas según contrato':'sin contrato activo'}</div></div>
     <div class="stat-card"><div class="lbl">Tipo contrato</div><div class="val" style="font-size:15px;letter-spacing:0">${contrato?TIPO_LABEL[contrato.tipo]:'—'}</div><div class="sub">${contrato?(contrato.fecha_fin?'hasta '+fmtDate(contrato.fecha_fin):'abierto'):'sin contrato'}</div></div>`;
 }
