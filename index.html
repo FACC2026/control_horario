@@ -206,8 +206,6 @@ svg.icon{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;str
       <div id="page-aprobaciones" style="display:none">
         <div class="sec-title">Solicitudes de permiso pendientes</div>
         <div id="aprobList"><div class="loading">Cargando...</div></div>
-        <div class="sec-title" style="margin-top:1.5rem">Incidencias de fichaje pendientes</div>
-        <div id="incidList"><div class="loading">Cargando...</div></div>
       </div>
 
       <!-- INFORME -->
@@ -216,7 +214,7 @@ svg.icon{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;str
           <div class="sec-title" style="margin:0">Informe mensual · <span id="mesInforme"></span></div>
           <button class="btn sm" onclick="exportarCSV()"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button>
         </div>
-        <div class="card" style="padding:0 1.25rem"><table class="tbl"><thead><tr><th>Empleado</th><th>Contrato activo</th><th>H.previstas</th><th>H.realizadas</th><th>Saldo</th><th>Ausencias</th></tr></thead><tbody id="informeBody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
+        <div class="card" style="padding:0 1.25rem"><table class="tbl"><thead><tr><th>Empleado</th><th>Contrato activo</th><th>H.previstas</th><th>H.realizadas</th><th>Saldo hasta hoy</th><th>Ausencias</th><th>Incidencias</th></tr></thead><tbody id="informeBody"><tr><td colspan="7" class="loading">Cargando...</td></tr></tbody></table></div>
       </div>
 
     </div>
@@ -678,11 +676,8 @@ async function resolverSol(id,estado){
 
 async function actualizarPendBadge(){
   if(!empActual||!['coordinador','manager'].includes(empActual.rol))return;
-  const [p,inc]=await Promise.all([
-    sb('solicitudes?estado=eq.pendiente&select=id'),
-    sb('incidencias_fichaje?estado=eq.pendiente&select=id')
-  ]);
-  const n=(p?p.length:0)+(inc?inc.length:0);
+  const p=await sb('solicitudes?estado=eq.pendiente&select=id');
+  const n=p?p.length:0;
   const b=document.getElementById('pendBadge');b.textContent=n;b.style.display=n?'':'none';
 }
 
@@ -693,6 +688,7 @@ async function cargarInforme(){
   const emps=await sb('empleados?activo=eq.true&order=nombre');
   const fich=await sb(`fichajes?entrada=gte.${ini}&salida=not.is.null`);
   const aus=await sb(`solicitudes?fecha_inicio=gte.${ini.split('T')[0]}&estado=eq.aprobada`);
+  const incidencias=await sb(`incidencias_fichaje?estado=eq.aprobada&aplicada_en=gte.${ini.split('T')[0]}`);
   const contratos=await sb(`contratos?activo=eq.true&fecha_inicio=lte.${hoy}`);
   const contratoMap={};
   if(contratos)contratos.forEach(c=>{if(!contratoMap[c.empleado_id]&&(!c.fecha_fin||c.fecha_fin>=hoy))contratoMap[c.empleado_id]=c});
@@ -712,15 +708,56 @@ async function cargarInforme(){
     const c=contratoMap[e.id];
     const myA=aus?aus.filter(a=>a.empleado_id===e.id).reduce((a,s)=>a+s.dias,0):0;
     const[bg,tc]=avatarBg(e.nombre);
-    return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc};width:24px;height:24px;font-size:9px">${initials(e.nombre)}</div>${e.nombre}</div></td><td>${c?`<span class="badge b-${c.tipo}">${TIPO_LABEL[c.tipo]}</span> ${c.horas_semanales}h/sem`:'<span style="color:var(--red);font-size:12px">sin contrato</span>'}</td><td style="font-family:var(--mono);font-size:12px">${prev>0?prev.toFixed(1)+'h':'—'}</td><td style="font-family:var(--mono);font-size:12px">${realH.toFixed(1)}h</td><td style="font-family:var(--mono);font-size:12px;color:${saldo>=0?'var(--green)':'var(--red)'}">${prev>0?(saldo>=0?'+':'')+saldo.toFixed(1)+'h':'—'}</td><td style="font-size:12px">${myA>0?myA+'d':'—'}</td></tr>`;
+    const myI=incidencias?incidencias.filter(i=>i.empleado_id===e.id).length:0;
+    return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc};width:24px;height:24px;font-size:9px">${initials(e.nombre)}</div>${e.nombre}</div></td><td>${c?`<span class="badge b-${c.tipo}">${TIPO_LABEL[c.tipo]}</span> ${c.horas_semanales}h/sem`:'<span style="color:var(--red);font-size:12px">sin contrato</span>'}</td><td style="font-family:var(--mono);font-size:12px">${prev>0?prev.toFixed(1)+'h':'—'}</td><td style="font-family:var(--mono);font-size:12px">${realH.toFixed(1)}h</td><td style="font-family:var(--mono);font-size:12px;color:${saldo>=0?'var(--green)':'var(--red)'}">${prev>0?(saldo>=0?'+':'')+saldo.toFixed(1)+'h':'—'}</td><td style="font-size:12px">${myA>0?myA+'d':'—'}</td><td style="font-size:12px">${myI>0?'<span style="color:var(--amber)">⚠ '+myI+'</span>':'—'}</td></tr>`;
   }).join('');
 }
 
-function exportarCSV(){
-  const rows=[['Empleado','Contrato','H.previstas','H.realizadas','Saldo','Ausencias']];
+async function exportarCSV(){
+  toast('Preparando informe con trazabilidad...');
+  const mes=new Date();
+  const iniStr=new Date(mes.getFullYear(),mes.getMonth(),1).toLocaleDateString('sv-SE');
+
+  // Bloque 1: resumen mensual
+  const rows=[['RESUMEN MENSUAL'],['Empleado','Contrato','H.previstas mes','H.realizadas','Saldo hasta hoy','Ausencias','Incidencias']];
   document.querySelectorAll('#informeBody tr').forEach(tr=>rows.push(Array.from(tr.cells).map(td=>td.innerText.trim())));
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
-  a.download='informe_'+new Date().toLocaleDateString('sv-SE')+'.csv';a.click();toast('✓ Exportado');
+  rows.push([]);
+
+  // Bloque 2: detalle de fichajes con incidencias
+  rows.push(['TRAZABILIDAD DE FICHAJES']);
+  rows.push(['Empleado','Fecha','Entrada','Salida','Horas','Incidencia','Hora original','Motivo','Comentario','Aplicada']);
+
+  const emps=await sb('empleados?activo=eq.true&order=nombre');
+  const fichajes=await sb('fichajes?entrada=gte.'+iniStr+'T00:00:00&order=entrada.asc');
+  const incs=await sb('incidencias_fichaje?estado=eq.aprobada&order=aplicada_en.asc');
+  const empMap={};emps.forEach(e=>empMap[e.id]=e);
+  const incMap={};
+  if(incs)incs.forEach(i=>{if(!incMap[i.fichaje_id])incMap[i.fichaje_id]=[];incMap[i.fichaje_id].push(i)});
+
+  if(fichajes)fichajes.forEach(f=>{
+    const emp=empMap[f.empleado_id];if(!emp)return;
+    const h=f.salida?horasDiff(f.entrada,f.salida).toFixed(1)+'h':'—';
+    const mis=incMap[f.id]||[];
+    if(mis.length){
+      mis.forEach(i=>{
+        rows.push([emp.nombre,fmtDate(f.entrada.split('T')[0]),fmtHM(f.entrada),f.salida?fmtHM(f.salida):'—',h,
+          TIPO_INC_LABEL[i.tipo]||i.tipo,
+          i.hora_anterior?fmtHM(i.hora_anterior):'sin fichaje previo',
+          MOTIVOS_LABEL[i.motivo]||i.motivo,
+          i.comentario||'',
+          i.aplicada_en?fmtHM(i.aplicada_en):'']);
+      });
+    } else {
+      rows.push([emp.nombre,fmtDate(f.entrada.split('T')[0]),fmtHM(f.entrada),f.salida?fmtHM(f.salida):'—',h,'','','','','']);
+    }
+  });
+
+  const csv='﻿'+rows.map(r=>r.map(c=>'"'+(c||'')+'"').join(',')).join('
+');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='informe_jornada_'+new Date().toLocaleDateString('sv-SE')+'.csv';
+  a.click();toast('✓ Informe exportado con trazabilidad completa');
 }
 
 function openModal(id){document.getElementById(id).classList.add('open')}
@@ -807,34 +844,55 @@ async function enviarIncidencia(){
   const f=await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${fecha}T00:00:00&entrada=lte.${fecha}T23:59:59&order=entrada.desc&limit=1`);
   const fichaje=f&&f.length?f[0]:null;
 
-  const horaCorrecta=(tipo==='salida'&&horaSalida)
-    ? `${fecha}T${horaSalida}:00`
-    : `${fecha}T${horaEntrada}:00`;
-  const horaIncorrecta=tipo==='entrada'&&fichaje?fichaje.entrada:tipo==='salida'&&fichaje?fichaje.salida:null;
+  const horaCorrecta=`${fecha}T${horaEntrada}:00`;
+  const horaCorrectaSalida=horaSalida?`${fecha}T${horaSalida}:00`:null;
 
-  const body={
+  // Guardar hora anterior para trazabilidad
+  const horaAnteriorEntrada=fichaje?fichaje.entrada:null;
+  const horaAnteriorSalida=fichaje?fichaje.salida:null;
+
+  const ahora=new Date().toISOString();
+
+  // APLICAR INMEDIATAMENTE al fichaje
+  if(fichaje){
+    const update={};
+    if(tipo==='entrada'||tipo==='fichaje_completo') update.entrada=horaCorrecta;
+    if((tipo==='salida'||tipo==='fichaje_completo')&&horaCorrectaSalida) update.salida=horaCorrectaSalida;
+    await sb(`fichajes?id=eq.${fichaje.id}`,{method:'PATCH',body:update,prefer:'return=minimal'});
+  } else {
+    // No había fichaje — crear uno nuevo
+    const c=await getContratoActivo(empActual.id);
+    const newFichaje={empleado_id:empActual.id,entrada:horaCorrecta};
+    if(horaCorrectaSalida) newFichaje.salida=horaCorrectaSalida;
+    if(c) newFichaje.contrato_id=c.id;
+    const res=await sb('fichajes',{method:'POST',body:newFichaje});
+    if(res&&res.length) fichaje=res[0]; // no podemos reasignar const, pero se guarda abajo
+  }
+
+  // Guardar incidencia con trazabilidad completa (estado aprobada = ya aplicada)
+  const incBody={
     empleado_id:empActual.id,
     fichaje_id:fichaje?fichaje.id:null,
     tipo,
-    hora_incorrecta:horaIncorrecta||null,
+    hora_incorrecta:tipo==='salida'?horaAnteriorSalida:horaAnteriorEntrada,
     hora_correcta:horaCorrecta,
+    hora_correcta_salida:horaCorrectaSalida||null,
+    hora_anterior:tipo==='salida'?horaAnteriorSalida:horaAnteriorEntrada,
     motivo,
     comentario:coment||null,
-    estado:'pendiente'
+    estado:'aprobada', // se aplica automáticamente
+    aplicada_en:ahora,
+    revisado_por:empActual.id,
+    revisado_en:ahora
   };
+  await sb('incidencias_fichaje',{method:'POST',body:incBody});
 
-  // Si es fichaje completo, guardar también la hora de salida en comentario
-  if(tipo==='fichaje_completo'&&horaSalida){
-    body.comentario=(coment?coment+' | ':'')+'Salida correcta: '+horaSalida;
-  }
-
-  await sb('incidencias_fichaje',{method:'POST',body});
-  toast('✓ Incidencia reportada. El coordinador la revisará.');
+  toast('✓ Incidencia registrada y aplicada automáticamente');
   document.getElementById('incHoraEntrada').value='';
   document.getElementById('incHoraSalida').value='';
   document.getElementById('incComent').value='';
   await cargarMisIncidencias();
-  await actualizarPendBadge();
+  await cargarUltimosFichajes();
 }
 
 async function cargarMisIncidencias(){
@@ -859,77 +917,11 @@ async function cargarMisIncidencias(){
 }
 
 async function cargarIncidenciasMgr(){
-  const pend=await sb('incidencias_fichaje?estado=eq.pendiente&order=creado_en.asc');
-  const cont=document.getElementById('incidList');
-  if(!cont)return;
-  if(!pend||!pend.length){cont.innerHTML='<div class="empty">✓ No hay incidencias pendientes</div>';return}
-  const empIds=[...new Set(pend.map(i=>i.empleado_id))];
-  const emps=await sb(`empleados?id=in.(${empIds.join(',')})`);
-  const empMap={};emps.forEach(e=>empMap[e.id]=e);
-  cont.innerHTML=pend.map(i=>{
-    const emp=empMap[i.empleado_id]||{nombre:'?'};
-    const[bg,tc]=avatarBg(emp.nombre);
-    return`<div class="perm-card" id="inc${i.id}">
-      <div class="avatar lg" style="background:${bg};color:${tc}">${initials(emp.nombre)}</div>
-      <div class="perm-info">
-        <div class="perm-title">${emp.nombre} · ${TIPO_INC_LABEL[i.tipo]||i.tipo}</div>
-        <div class="perm-sub">
-          ${fmtDate(i.hora_correcta.split('T')[0])} · hora correcta: <strong>${fmtHM(i.hora_correcta)}</strong>
-          ${i.hora_incorrecta?' · anterior: '+fmtHM(i.hora_incorrecta):'· sin fichaje previo'}
-          · motivo: ${MOTIVOS_LABEL[i.motivo]||i.motivo}
-          ${i.comentario?' · '+i.comentario:''}
-        </div>
-      </div>
-      <div class="perm-actions">
-        <button class="btn sm approve" onclick="resolverIncidencia('${i.id}','aprobada')">✓ Aprobar</button>
-        <button class="btn sm deny" onclick="resolverIncidencia('${i.id}','denegada')">✕ Denegar</button>
-      </div>
-    </div>`;
-  }).join('');
+  // Esta función ahora no se usa en aprobaciones, las incidencias se aplican automáticamente
+  // Se usa en el informe para mostrar trazabilidad
 }
 
-async function resolverIncidencia(id, estado){
-  const inc=await sb(`incidencias_fichaje?id=eq.${id}`);
-  if(!inc||!inc.length)return;
-  const i=inc[0];
-
-  if(estado==='aprobada'){
-    if(i.fichaje_id){
-      // Guardar hora anterior para trazabilidad
-      const campo=i.tipo==='salida'?'salida':'entrada';
-      const fich=await sb(`fichajes?id=eq.${i.fichaje_id}`);
-      const horaAnterior=fich&&fich.length?fich[0][campo]:null;
-      // Actualizar el fichaje
-      const update={};update[campo]=i.hora_correcta;
-      await sb(`fichajes?id=eq.${i.fichaje_id}`,{method:'PATCH',body:update,prefer:'return=minimal'});
-      // Guardar hora anterior en la incidencia para trazabilidad
-      await sb(`incidencias_fichaje?id=eq.${id}`,{method:'PATCH',prefer:'return=minimal',
-        body:{estado,revisado_por:empActual.id,revisado_en:new Date().toISOString(),hora_anterior:horaAnterior}});
-    } else {
-      // No había fichaje — crear uno nuevo
-      const fecha=i.hora_correcta.split('T')[0];
-      const body={empleado_id:i.empleado_id,entrada:i.hora_correcta};
-      // Si el tipo es fichaje_completo intentar extraer salida del comentario
-      if(i.tipo==='fichaje_completo'&&i.comentario){
-        const match=i.comentario.match(/Salida correcta: (\d{2}:\d{2})/);
-        if(match) body.salida=`${fecha}T${match[1]}:00`;
-      }
-      // Buscar contrato activo para asociarlo
-      const c=await getContratoActivo(i.empleado_id);
-      if(c) body.contrato_id=c.id;
-      await sb('fichajes',{method:'POST',body});
-      await sb(`incidencias_fichaje?id=eq.${id}`,{method:'PATCH',prefer:'return=minimal',
-        body:{estado,revisado_por:empActual.id,revisado_en:new Date().toISOString()}});
-    }
-    toast('✓ Incidencia aprobada y fichaje corregido');
-  } else {
-    await sb(`incidencias_fichaje?id=eq.${id}`,{method:'PATCH',prefer:'return=minimal',
-      body:{estado,revisado_por:empActual.id,revisado_en:new Date().toISOString()}});
-    toast('Incidencia denegada');
-  }
-  await cargarIncidenciasMgr();
-  await actualizarPendBadge();
-}
+// resolverIncidencia eliminada — las incidencias se aplican automáticamente
 // ============================================================
 
 const pageTitles={fichar:'Fichar',registro:'Mi registro',permisos:'Permisos y ausencias',incidencias:'Incidencias de fichaje',equipo:'Estado del equipo',trabajadores:'Trabajadores',aprobaciones:'Aprobaciones',informe:'Informe mensual'};
@@ -941,7 +933,7 @@ async function renderPagina(name){
     case'incidencias':await cargarMotivos();await cargarMisIncidencias();break;
     case'equipo':await cargarEquipo();break;
     case'trabajadores':await cargarTrabajadores();break;
-    case'aprobaciones':await cargarAprobaciones();await cargarIncidenciasMgr();break;
+    case'aprobaciones':await cargarAprobaciones();break;
     case'informe':await cargarInforme();break;
   }
 }
