@@ -292,13 +292,12 @@ function fechaLocal(d){
   return y+'-'+m+'-'+dd;
 }
 
-function calcHorasPrevistas(contratos, fechaIni, fechaFin){
+// Horas previstas del mes completo (1 al último día del mes)
+function calcHorasMes(contratos, fechaIni, fechaFin){
   if(!contratos||!contratos.length) return 0;
-  // Solo contar hasta hoy, nunca días futuros
-  const hoy=new Date(); hoy.setHours(23,59,59,0);
-  const fin=fechaFin<hoy?new Date(fechaFin):hoy;
   let total=0;
   const d=new Date(fechaIni);
+  const fin=new Date(fechaFin);
   while(d<=fin){
     const dow=d.getDay();
     if(dow>=1&&dow<=5){
@@ -309,6 +308,12 @@ function calcHorasPrevistas(contratos, fechaIni, fechaFin){
     d.setDate(d.getDate()+1);
   }
   return total;
+}
+
+// Horas previstas hasta hoy (para calcular el saldo)
+function calcHorasHasta(contratos, fechaIni){
+  const hoy=new Date(); hoy.setHours(23,59,59,0);
+  return calcHorasMes(contratos, fechaIni, hoy);
 }
 
 async function init(){
@@ -434,11 +439,14 @@ async function cargarStatsEmp(){
   const tot=f?f.reduce((a,r)=>a+horasDiff(r.entrada,r.salida),0):0;
   // Calcular horas previstas día a día según el contrato de cada fecha
   const todosContratos=await sb(`contratos?empleado_id=eq.${empActual.id}&order=fecha_inicio.asc`);
-  const prev=calcHorasPrevistas(todosContratos,new Date(mes.getFullYear(),mes.getMonth(),1),new Date());
-  const saldo=tot-prev;
+  const iniMes=new Date(mes.getFullYear(),mes.getMonth(),1);
+  const finMes=new Date(mes.getFullYear(),mes.getMonth()+1,0);
+  const prev=calcHorasMes(todosContratos,iniMes,finMes);
+  const prevHastaHoy=calcHorasHasta(todosContratos,iniMes);
+  const saldo=tot-prevHastaHoy;
   document.getElementById('statsEmp').innerHTML=`
-    <div class="stat-card"><div class="lbl">Horas este mes</div><div class="val">${tot.toFixed(0)}</div><div class="sub">de ${Math.round(prev)} previstas</div></div>
-    <div class="stat-card"><div class="lbl">Saldo</div><div class="val" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo.toFixed(1)}h</div><div class="sub">este mes</div></div>
+    <div class="stat-card"><div class="lbl">Horas este mes</div><div class="val">${tot.toFixed(0)}h</div><div class="sub">de ${prev.toFixed(0)}h previstas en el mes</div></div>
+    <div class="stat-card"><div class="lbl">Saldo hasta hoy</div><div class="val" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo.toFixed(1)}h</div><div class="sub">${prevHastaHoy.toFixed(0)}h debidas hasta hoy</div></div>
     <div class="stat-card"><div class="lbl">Jornada semanal</div><div class="val">${contrato?contrato.horas_semanales:'—'}</div><div class="sub">${contrato?'horas según contrato':'sin contrato activo'}</div></div>
     <div class="stat-card"><div class="lbl">Tipo contrato</div><div class="val" style="font-size:15px;letter-spacing:0">${contrato?TIPO_LABEL[contrato.tipo]:'—'}</div><div class="sub">${contrato?(contrato.fecha_fin?'hasta '+fmtDate(contrato.fecha_fin):'abierto'):'sin contrato'}</div></div>`;
 }
@@ -458,7 +466,11 @@ async function cargarRegistro(){
     const jornadaDia=cDia?(cDia.horas_semanales/5):8;
     const ok=h&&h>=jornadaDia-0.25;
     return`<tr><td>${fmtDate(r.entrada.split('T')[0])}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td><td><span class="badge ${ok?'b-aprobada':'b-denegada'}">${ok?'ok':'incompleto'}</span></td></tr>`}).join('');
-  const prev=calcHorasPrevistas(todosContratos,new Date(mes.getFullYear(),mes.getMonth(),1),new Date()),saldo=tot-prev,pct=Math.min(100,Math.round(tot/Math.max(prev,1)*100));
+  const iniMesR=new Date(mes.getFullYear(),mes.getMonth(),1);
+  const finMesR=new Date(mes.getFullYear(),mes.getMonth()+1,0);
+  const prev=calcHorasMes(todosContratos,iniMesR,finMesR);
+  const prevHastaHoyR=calcHorasHasta(todosContratos,iniMesR);
+  const saldo=tot-prevHastaHoyR,pct=Math.min(100,Math.round(tot/Math.max(prevHastaHoyR,1)*100));
   document.getElementById('saldoFill').style.cssText=`width:${pct}%;background:${saldo>=0?'var(--green)':'var(--red)'}`;
   document.getElementById('saldoVal').style.color=saldo>=0?'var(--green)':'var(--red)';
   document.getElementById('saldoVal').textContent=(saldo>=0?'+':'')+saldo.toFixed(1)+'h';
@@ -650,8 +662,10 @@ async function cargarInforme(){
     const myF=fich?fich.filter(f=>f.empleado_id===e.id):[];
     const realH=myF.reduce((a,f)=>a+horasDiff(f.entrada,f.salida),0);
     const misContratos=contratosPorEmp[e.id]||[];
-    const prev=calcHorasPrevistas(misContratos,iniMes,new Date());
-    const saldo=realH-prev;
+    const finMesI=new Date(mes.getFullYear(),mes.getMonth()+1,0);
+    const prev=calcHorasMes(misContratos,iniMes,finMesI);
+    const prevHoy=calcHorasHasta(misContratos,iniMes);
+    const saldo=realH-prevHoy;
     const c=contratoMap[e.id];
     const myA=aus?aus.filter(a=>a.empleado_id===e.id).reduce((a,s)=>a+s.dias,0):0;
     const[bg,tc]=avatarBg(e.nombre);
