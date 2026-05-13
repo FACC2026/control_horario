@@ -7,71 +7,88 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f4f0;
-  --surface: #ffffff;
-  --surface2: #f0efe9;
-  --border: #e2e0d8;
-  --text: #1a1916;
-  --text2: #6b6a65;
-  --text3: #a8a7a2;
-  --green: #2d6a4f;
-  --green-bg: #d8f3dc;
-  --red: #9b2335;
-  --red-bg: #fde8eb;
-  --blue: #1a4f7a;
-  --blue-bg: #dbeafe;
-  --amber: #7a4f1a;
-  --amber-bg: #fef3c7;
-  --purple: #4a2f7a;
-  --purple-bg: #ede9fe;
-  --pink: #7a2f5a;
-  --pink-bg: #fce7f3;
+  --bg: #f5f4f0; --surface: #ffffff; --surface2: #f0efe9; --border: #e2e0d8;
+  --text: #1a1916; --text2: #6b6a65; --text3: #a8a7a2;
+  --green: #2d6a4f; --green-bg: #d8f3dc;
+  --red: #9b2335; --red-bg: #fde8eb;
+  --blue: #1a4f7a; --blue-bg: #dbeafe;
+  --amber: #7a4f1a; --amber-bg: #fef3c7;
+  --purple: #4a2f7a; --purple-bg: #ede9fe;
+  --pink: #7a2f5a; --pink-bg: #fce7f3;
   --accent: #1a1916;
-  --radius: 10px;
-  --radius-lg: 16px;
-  --font: 'DM Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
+  --radius: 10px; --radius-lg: 16px;
+  --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
 
-/* Layout */
+/* LOGIN */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem; width: 100%; max-width: 400px; }
+.login-logo { font-size: 18px; font-weight: 500; margin-bottom: 0.25rem; }
+.login-sub { font-size: 13px; color: var(--text3); font-family: var(--mono); margin-bottom: 2rem; }
+.form-label { font-size: 11px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; display: block; }
+.form-group { margin-bottom: 1rem; }
+input[type=email], input[type=password], input[type=text], input[type=date], input[type=number], select, textarea {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font); font-size: 14px; background: var(--surface); color: var(--text);
+  outline: none; transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--text); }
+textarea { resize: vertical; min-height: 70px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius); font-family: var(--font); font-size: 14px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all .15s; white-space: nowrap; }
+.btn:hover { background: var(--surface2); }
+.btn.primary { background: var(--accent); color: white; border-color: transparent; }
+.btn.primary:hover { opacity: .88; }
+.btn.full { width: 100%; }
+.btn.sm { padding: 5px 12px; font-size: 12px; }
+.btn.approve { background: var(--green-bg); color: var(--green); border-color: transparent; }
+.btn.deny { background: var(--red-bg); color: var(--red); border-color: transparent; }
+.btn.danger { background: var(--red-bg); color: var(--red); border-color: transparent; }
+.err-msg { font-size: 13px; color: var(--red); background: var(--red-bg); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 1rem; display: none; }
+
+/* SHELL */
 .shell { display: flex; min-height: 100vh; }
 .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 0; display: flex; flex-direction: column; flex-shrink: 0; }
 .sidebar-logo { padding: 0 1.25rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
-.sidebar-logo span { font-size: 14px; font-weight: 500; letter-spacing: -0.3px; }
+.sidebar-logo span { font-size: 14px; font-weight: 500; }
 .sidebar-logo small { display: block; font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 1px; }
-.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 1.25rem; font-size: 13px; color: var(--text2); cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: all .15s; }
+.nav-sep { font-size: 10px; font-family: var(--mono); color: var(--text3); padding: 1rem 1.25rem 0.25rem; letter-spacing: 1px; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 1.25rem; font-size: 13px; color: var(--text2); cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: all .15s; font-family: var(--font); }
 .nav-item:hover { background: var(--surface2); color: var(--text); }
 .nav-item.active { background: var(--accent); color: white; }
-.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-.nav-sep { font-size: 10px; font-family: var(--mono); color: var(--text3); padding: 1rem 1.25rem 0.25rem; letter-spacing: 1px; text-transform: uppercase; }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
 .sidebar-bottom { margin-top: auto; padding: 1rem 1.25rem 0; border-top: 1px solid var(--border); }
-.user-chip { display: flex; align-items: center; gap: 8px; }
-.avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
-.user-chip .name { font-size: 13px; font-weight: 500; }
-.user-chip .role { font-size: 11px; color: var(--text3); font-family: var(--mono); }
-
+.user-chip .uname { font-size: 13px; font-weight: 500; }
+.user-chip .urole { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.user-chip { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .main { flex: 1; overflow-y: auto; }
 .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 10; }
 .topbar h1 { font-size: 16px; font-weight: 500; }
-.topbar-right { display: flex; align-items: center; gap: 10px; }
-.role-toggle { display: flex; background: var(--surface2); border-radius: var(--radius); padding: 3px; gap: 2px; }
-.rt-btn { padding: 5px 12px; font-size: 12px; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--text2); font-family: var(--font); transition: all .15s; }
-.rt-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.content { padding: 2rem; max-width: 980px; }
 
-.content { padding: 2rem; max-width: 960px; }
-
-/* Cards */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+/* COMPONENTS */
+.avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+.avatar.lg { width: 40px; height: 40px; font-size: 13px; }
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 12px; margin-bottom: 1.5rem; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
 .stat-card .lbl { font-size: 11px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
 .stat-card .val { font-size: 24px; font-weight: 300; letter-spacing: -1px; line-height: 1; }
 .stat-card .sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+.sec-title { font-size: 11px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 1rem; }
+.badge { border-radius: 4px; padding: 2px 8px; font-size: 11px; font-family: var(--mono); font-weight: 500; }
+.b-pend { background: var(--amber-bg); color: var(--amber); }
+.b-apro, .b-aprobada { background: var(--green-bg); color: var(--green); }
+.b-dene, .b-denegada { background: var(--red-bg); color: var(--red); }
+.b-pendiente { background: var(--amber-bg); color: var(--amber); }
+.b-emp { background: var(--blue-bg); color: var(--blue); }
+.b-coord { background: var(--purple-bg); color: var(--purple); }
+.b-mgr { background: var(--amber-bg); color: var(--amber); }
+.b-indef { background: var(--green-bg); color: var(--green); }
+.b-temp { background: var(--amber-bg); color: var(--amber); }
 
-/* Fichaje */
+/* FICHAJE */
 .fichar-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem; }
 .clock { font-size: 52px; font-weight: 300; letter-spacing: -2px; font-family: var(--mono); line-height: 1; }
 .clock-date { font-size: 13px; color: var(--text3); font-family: var(--mono); }
@@ -83,23 +100,20 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .dot-out { background: var(--text3); }
 .btn-in { background: var(--green); color: white; border: none; border-radius: var(--radius); padding: 12px 28px; font-size: 15px; font-family: var(--font); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity .15s; }
 .btn-in:hover { opacity: .88; }
-.btn-out { background: var(--red-bg); color: var(--red); border: 1px solid #f5c6cb; border-radius: var(--radius); padding: 12px 28px; font-size: 15px; font-family: var(--font); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity .15s; }
-.btn-out:hover { opacity: .8; }
+.btn-out { background: var(--red-bg); color: var(--red); border: 1px solid #f5c6cb; border-radius: var(--radius); padding: 12px 28px; font-size: 15px; font-family: var(--font); cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
-/* Tabla registro */
-.sec-title { font-size: 13px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
-.reg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.reg-table th { text-align: left; padding: 8px 10px; color: var(--text3); font-weight: 400; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
-.reg-table td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-.reg-table tr:last-child td { border-bottom: none; }
-.time-tag { background: var(--surface2); border-radius: 4px; padding: 2px 7px; font-family: var(--mono); font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+/* TABLAS */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th { text-align: left; padding: 8px 10px; color: var(--text3); font-weight: 400; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: none; }
+.time-tag { background: var(--surface2); border-radius: 4px; padding: 2px 7px; font-family: var(--mono); font-size: 12px; }
 .horas-ok { color: var(--green); font-family: var(--mono); font-size: 12px; }
 .horas-ko { color: var(--red); font-family: var(--mono); font-size: 12px; }
 
-/* Permisos */
+/* PERMISOS */
 .tipo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 8px; margin-bottom: 1rem; }
 .tipo-opt { border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; font-size: 13px; cursor: pointer; background: none; color: var(--text2); text-align: left; display: flex; align-items: center; gap: 7px; font-family: var(--font); transition: all .15s; }
-.tipo-opt:hover { border-color: var(--text3); }
 .tipo-opt.sel { border-width: 2px; font-weight: 500; }
 .tipo-opt.sel.vac   { border-color: var(--green);  background: var(--green-bg);  color: var(--green); }
 .tipo-opt.sel.prop  { border-color: var(--blue);   background: var(--blue-bg);   color: var(--blue); }
@@ -107,133 +121,129 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .tipo-opt.sel.exam  { border-color: var(--purple); background: var(--purple-bg); color: var(--purple); }
 .tipo-opt.sel.mat   { border-color: var(--pink);   background: var(--pink-bg);   color: var(--pink); }
 .tipo-opt.sel.tras  { border-color: var(--amber);  background: var(--amber-bg);  color: var(--amber); }
-
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.form-full { grid-template-columns: 1fr; }
-.form-label { font-size: 11px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-input[type=date], input[type=text], textarea, select {
-  width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); font-family: var(--font); font-size: 14px; background: var(--surface); color: var(--text); outline: none; transition: border-color .15s;
-}
-input:focus, textarea:focus, select:focus { border-color: var(--text); }
-textarea { resize: vertical; min-height: 70px; }
+.form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
 
-.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius); font-family: var(--font); font-size: 14px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all .15s; }
-.btn:hover { background: var(--surface2); }
-.btn.primary { background: var(--accent); color: white; border-color: transparent; }
-.btn.primary:hover { opacity: .88; }
-.btn.sm { padding: 5px 12px; font-size: 12px; }
-.btn.approve { background: var(--green-bg); color: var(--green); border-color: transparent; }
-.btn.deny { background: var(--red-bg); color: var(--red); border-color: transparent; }
-
-/* Badge */
-.badge { border-radius: 4px; padding: 2px 8px; font-size: 11px; font-family: var(--mono); font-weight: 500; }
-.b-pend  { background: var(--amber-bg);  color: var(--amber); }
-.b-apro  { background: var(--green-bg);  color: var(--green); }
-.b-dene  { background: var(--red-bg);    color: var(--red); }
-.b-vac   { background: var(--green-bg);  color: var(--green); }
-.b-prop  { background: var(--blue-bg);   color: var(--blue); }
-.b-enf   { background: var(--red-bg);    color: var(--red); }
-.b-exam  { background: var(--purple-bg); color: var(--purple); }
-.b-mat   { background: var(--pink-bg);   color: var(--pink); }
-.b-tras  { background: var(--amber-bg);  color: var(--amber); }
-
-/* Perm card */
+/* PERM CARDS */
 .perm-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
 .perm-info { flex: 1; min-width: 0; }
 .perm-title { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
 .perm-sub { font-size: 12px; color: var(--text3); font-family: var(--mono); }
 .perm-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-/* Equipo */
-.emp-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.emp-row:last-child { border-bottom: none; }
-.emp-name { font-size: 14px; font-weight: 500; }
-.emp-dept { font-size: 12px; color: var(--text3); font-family: var(--mono); }
-.estado-chip { font-size: 11px; font-family: var(--mono); padding: 3px 8px; border-radius: 4px; }
-.estado-fichado    { background: var(--green-bg);  color: var(--green); }
-.estado-sin_fichar { background: var(--surface2);  color: var(--text3); }
-.estado-vacaciones { background: var(--blue-bg);   color: var(--blue); }
-.estado-permiso    { background: var(--amber-bg);  color: var(--amber); }
+/* MODAL */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.75rem; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+.modal h2 { font-size: 16px; font-weight: 500; margin-bottom: 1.25rem; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.25rem; }
 
-/* Saldo bar */
+/* SALDO */
 .saldo-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border-radius: var(--radius); margin-bottom: 1rem; font-size: 13px; }
 .saldo-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .saldo-fill { height: 100%; border-radius: 2px; }
 
-/* Notificaciones */
+/* TOAST */
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--accent); color: white; padding: 10px 18px; border-radius: var(--radius); font-size: 13px; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; }
 .toast.show { opacity: 1; }
-
-/* Loading */
 .loading { text-align: center; padding: 2rem; font-size: 13px; color: var(--text3); font-family: var(--mono); }
 .empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text3); }
-
-/* Tabs */
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-.tab { padding: 8px 14px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: var(--font); transition: all .15s; }
-.tab.active { color: var(--text); border-bottom-color: var(--accent); }
-
 svg.icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 </style>
 </head>
 <body>
 
-<div class="shell">
+<!-- LOGIN -->
+<div id="loginView" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">Control de Jornada</div>
+    <div class="login-sub">Accede con tu cuenta de empresa</div>
+    <div class="err-msg" id="loginErr"></div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" id="loginEmail" placeholder="tu@empresa.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn primary full" onclick="doLogin()">Entrar</button>
+    <div style="margin-top:1rem;text-align:center">
+      <button class="btn sm" onclick="showReset()" style="border:none;background:none;color:var(--text3);font-size:12px">¿Olvidaste tu contraseña?</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD -->
+<div id="resetView" class="login-wrap" style="display:none">
+  <div class="login-card">
+    <div class="login-logo">Restablecer contraseña</div>
+    <div class="login-sub">Te enviaremos un enlace a tu email</div>
+    <div class="err-msg" id="resetErr"></div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" id="resetEmail" placeholder="tu@empresa.com">
+    </div>
+    <button class="btn primary full" onclick="doReset()">Enviar enlace</button>
+    <div style="margin-top:1rem;text-align:center">
+      <button class="btn sm" onclick="showLogin()" style="border:none;background:none;color:var(--text3);font-size:12px">Volver al login</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appView" class="shell" style="display:none">
   <aside class="sidebar">
     <div class="sidebar-logo">
       <span>Control de Jornada</span>
-      <small>v1.0 · supabase</small>
+      <small id="sideRole">—</small>
     </div>
 
-    <span class="nav-sep">Empleado</span>
-    <button class="nav-item active" onclick="showPage('fichar', this)">
-      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Fichar
+    <span class="nav-sep">Mi jornada</span>
+    <button class="nav-item active" id="nav-fichar" onclick="showPage('fichar',this)">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Fichar
     </button>
-    <button class="nav-item" onclick="showPage('registro', this)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Mi registro
+    <button class="nav-item" id="nav-registro" onclick="showPage('registro',this)">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Mi registro
     </button>
-    <button class="nav-item" onclick="showPage('permisos', this)">
-      <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Permisos
+    <button class="nav-item" id="nav-permisos" onclick="showPage('permisos',this)">
+      <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Permisos
     </button>
 
-    <span class="nav-sep">Manager</span>
-    <button class="nav-item" onclick="showPage('equipo', this)">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Equipo
+    <span class="nav-sep" id="navMgrSep" style="display:none">Coordinación</span>
+    <button class="nav-item" id="nav-equipo" style="display:none" onclick="showPage('equipo',this)">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Equipo
     </button>
-    <button class="nav-item" onclick="showPage('aprobaciones', this)">
+    <button class="nav-item" id="nav-trabajadores" style="display:none" onclick="showPage('trabajadores',this)">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Trabajadores
+    </button>
+    <button class="nav-item" id="nav-aprobaciones" style="display:none" onclick="showPage('aprobaciones',this)">
       <svg class="icon" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Aprobaciones <span id="pendBadge" style="display:none;background:var(--amber-bg);color:var(--amber);border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono);margin-left:4px">0</span>
     </button>
-    <button class="nav-item" onclick="showPage('informe', this)">
-      <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Informe
+    <button class="nav-item" id="nav-informe" style="display:none" onclick="showPage('informe',this)">
+      <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Informe
     </button>
 
     <div class="sidebar-bottom">
       <div class="user-chip">
         <div class="avatar" id="sideAvatar" style="background:#dbeafe;color:#1a4f7a">--</div>
         <div>
-          <div class="name" id="sideName">Cargando...</div>
-          <div class="role" id="sideRole">—</div>
+          <div class="uname" id="sideName">—</div>
+          <div class="urole" id="sideRoleLbl">—</div>
         </div>
       </div>
+      <button class="btn sm full" onclick="doLogout()" style="margin-top:6px">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
     </div>
   </aside>
 
   <div class="main">
     <div class="topbar">
       <h1 id="pageTitle">Fichar</h1>
-      <div class="topbar-right">
-        <select id="empSelector" style="font-size:13px;padding:5px 8px;width:180px" onchange="cambiarEmpleado()">
-          <option value="">Cargando...</option>
-        </select>
-      </div>
     </div>
-
     <div class="content">
 
       <!-- FICHAR -->
@@ -241,7 +251,7 @@ svg.icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-w
         <div class="stats-row" id="statsEmp"></div>
         <div class="fichar-card">
           <div class="clock" id="reloj">--:--:--</div>
-          <div class="clock-date" id="fechaDisplay">--</div>
+          <div class="clock-date" id="fechaDisplay"></div>
           <div class="status-pill out" id="statusPill">
             <span class="dot dot-out" id="statusDot"></span>
             <span id="statusText">Sin fichar</span>
@@ -256,34 +266,34 @@ svg.icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-w
         </div>
         <div class="sec-title">Últimos fichajes</div>
         <div class="card" style="padding:0 1.25rem">
-          <table class="reg-table"><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Total</th></tr></thead>
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Total</th></tr></thead>
           <tbody id="ultimosFichajes"><tr><td colspan="4" class="loading">Cargando...</td></tr></tbody></table>
         </div>
       </div>
 
       <!-- REGISTRO -->
       <div id="page-registro" style="display:none">
-        <div class="saldo-row" id="saldoBar">
+        <div class="saldo-row">
           <span style="font-size:11px;font-family:var(--mono);color:var(--text3)">SALDO MES</span>
           <div class="saldo-track"><div class="saldo-fill" id="saldoFill" style="width:0%;background:var(--green)"></div></div>
-          <span id="saldoVal" style="font-family:var(--mono);font-size:13px;min-width:60px;text-align:right">—</span>
+          <span id="saldoVal" style="font-family:var(--mono);font-size:13px;min-width:70px;text-align:right">—</span>
         </div>
         <div class="card" style="padding:0 1.25rem">
-          <table class="reg-table"><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Estado</th></tr></thead>
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Estado</th></tr></thead>
           <tbody id="regHistorico"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody></table>
         </div>
       </div>
 
       <!-- PERMISOS -->
       <div id="page-permisos" style="display:none">
-        <div class="card" style="margin-bottom:1.5rem">
-          <div class="sec-title" style="margin-bottom:1rem">Nueva solicitud</div>
+        <div class="card">
+          <div class="sec-title">Nueva solicitud</div>
           <div class="tipo-grid" id="tipoGrid"></div>
           <div class="form-grid" style="margin-bottom:12px">
-            <div><div class="form-label">Fecha inicio</div><input type="date" id="fIni"></div>
-            <div><div class="form-label">Fecha fin</div><input type="date" id="fFin"></div>
+            <div><label class="form-label">Fecha inicio</label><input type="date" id="fIni"></div>
+            <div><label class="form-label">Fecha fin</label><input type="date" id="fFin"></div>
           </div>
-          <div style="margin-bottom:12px"><div class="form-label">Comentario (opcional)</div><input type="text" id="fComent" placeholder="Ej: aportaré justificante médico"></div>
+          <div style="margin-bottom:12px"><label class="form-label">Comentario (opcional)</label><input type="text" id="fComent" placeholder="Ej: aportaré justificante médico"></div>
           <button class="btn primary" onclick="enviarSolicitud()">
             <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             Enviar solicitud
@@ -296,9 +306,29 @@ svg.icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-w
       <!-- EQUIPO -->
       <div id="page-equipo" style="display:none">
         <div class="stats-row" id="statsMgr"></div>
-        <div class="sec-title">Estado del equipo hoy</div>
+        <div class="sec-title">Estado hoy</div>
         <div class="card" style="padding:0 1.25rem">
-          <div id="equipoList"><div class="loading">Cargando...</div></div>
+          <table class="tbl">
+            <thead><tr><th>Empleado</th><th>Estado</th><th>Entrada</th><th>Horas hoy</th></tr></thead>
+            <tbody id="equipoBody"><tr><td colspan="4" class="loading">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TRABAJADORES -->
+      <div id="page-trabajadores" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div class="sec-title" style="margin:0">Trabajadores</div>
+          <button class="btn primary sm" onclick="openModalAlta()">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Dar de alta
+          </button>
+        </div>
+        <div class="card" style="padding:0 1.25rem">
+          <table class="tbl">
+            <thead><tr><th>Empleado</th><th>Rol</th><th>Contrato</th><th>Horas/sem</th><th>Inicio</th><th>Fin</th><th></th></tr></thead>
+            <tbody id="trabajadoresBody"><tr><td colspan="7" class="loading">Cargando...</td></tr></tbody>
+          </table>
         </div>
       </div>
 
@@ -310,19 +340,106 @@ svg.icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-w
 
       <!-- INFORME -->
       <div id="page-informe" style="display:none">
-        <div class="sec-title">Informe mensual · <span id="mesInforme"></span></div>
-        <div class="card" style="padding:0 1.25rem;margin-bottom:1rem">
-          <table class="reg-table">
-            <thead><tr><th>Empleado</th><th>Previstas</th><th>Realizadas</th><th>Saldo</th><th>Ausencias</th></tr></thead>
-            <tbody id="informeBody"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div class="sec-title" style="margin:0">Informe mensual · <span id="mesInforme"></span></div>
+          <button class="btn sm" onclick="exportarCSV()">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+        </div>
+        <div class="card" style="padding:0 1.25rem">
+          <table class="tbl">
+            <thead><tr><th>Empleado</th><th>Contrato</th><th>H. previstas</th><th>H. realizadas</th><th>Saldo</th><th>Ausencias</th></tr></thead>
+            <tbody id="informeBody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody>
           </table>
         </div>
-        <button class="btn" onclick="exportarExcel()">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar Excel
-        </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALTA TRABAJADOR -->
+<div class="modal-bg" id="modalAlta">
+  <div class="modal">
+    <h2>Dar de alta trabajador</h2>
+    <div class="form-grid">
+      <div><label class="form-label">Nombre completo</label><input type="text" id="altaNombre"></div>
+      <div><label class="form-label">Email (será su acceso)</label><input type="email" id="altaEmail"></div>
+    </div>
+    <div class="form-grid cols3">
+      <div><label class="form-label">Rol</label>
+        <select id="altaRol">
+          <option value="empleado">Empleado</option>
+          <option value="manager">Manager</option>
+          <option value="coordinador">Coordinador</option>
+        </select>
+      </div>
+      <div><label class="form-label">Departamento</label><input type="text" id="altaDept"></div>
+      <div><label class="form-label">Teléfono</label><input type="text" id="altaTel"></div>
+    </div>
+    <div class="form-grid cols3">
+      <div><label class="form-label">DNI</label><input type="text" id="altaDni"></div>
+      <div><label class="form-label">Tipo contrato</label>
+        <select id="altaTipoContrato" onchange="toggleFechaFin()">
+          <option value="indefinido">Indefinido</option>
+          <option value="temporal">Temporal</option>
+        </select>
+      </div>
+      <div><label class="form-label">Horas/semana</label><input type="number" id="altaHoras" value="40" min="1" max="40"></div>
+    </div>
+    <div class="form-grid">
+      <div><label class="form-label">Fecha inicio contrato</label><input type="date" id="altaFechaIni"></div>
+      <div id="altaFechaFinWrap"><label class="form-label">Fecha fin contrato</label><input type="date" id="altaFechaFin"></div>
+    </div>
+    <div style="background:var(--amber-bg);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--amber);margin-top:4px">
+      Se enviará un email de invitación al trabajador para que establezca su contraseña.
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modalAlta')">Cancelar</button>
+      <button class="btn primary" onclick="darDeAlta()">Dar de alta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR TRABAJADOR -->
+<div class="modal-bg" id="modalEditar">
+  <div class="modal">
+    <h2>Editar trabajador</h2>
+    <input type="hidden" id="editId">
+    <div class="form-grid">
+      <div><label class="form-label">Nombre completo</label><input type="text" id="editNombre"></div>
+      <div><label class="form-label">Email</label><input type="email" id="editEmail" disabled style="opacity:.6"></div>
+    </div>
+    <div class="form-grid cols3">
+      <div><label class="form-label">Rol</label>
+        <select id="editRol">
+          <option value="empleado">Empleado</option>
+          <option value="manager">Manager</option>
+          <option value="coordinador">Coordinador</option>
+        </select>
+      </div>
+      <div><label class="form-label">Departamento</label><input type="text" id="editDept"></div>
+      <div><label class="form-label">Teléfono</label><input type="text" id="editTel"></div>
+    </div>
+    <div class="form-grid cols3">
+      <div><label class="form-label">DNI</label><input type="text" id="editDni"></div>
+      <div><label class="form-label">Tipo contrato</label>
+        <select id="editTipoContrato" onchange="toggleFechaFinEdit()">
+          <option value="indefinido">Indefinido</option>
+          <option value="temporal">Temporal</option>
+        </select>
+      </div>
+      <div><label class="form-label">Horas/semana</label><input type="number" id="editHoras" min="1" max="40"></div>
+    </div>
+    <div class="form-grid">
+      <div><label class="form-label">Fecha inicio contrato</label><input type="date" id="editFechaIni"></div>
+      <div id="editFechaFinWrap"><label class="form-label">Fecha fin contrato</label><input type="date" id="editFechaFin"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn danger sm" onclick="desactivarTrabajador()">Desactivar</button>
+      <button class="btn" onclick="closeModal('modalEditar')">Cancelar</button>
+      <button class="btn primary" onclick="guardarEdicion()">Guardar cambios</button>
     </div>
   </div>
 </div>
@@ -330,282 +447,318 @@ svg.icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-w
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = 'https://omnnmdcygmvrqmcukuvy.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tbm5tZGN5Z212cnFtY3VrdXZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjgyNjcsImV4cCI6MjA5NDI0NDI2N30.UmsY9ECBtCK7kwi5dOSQ88rPZT8WOp06vgEn2mcaheI';
+const SB_URL = 'https://omnnmdcygmvrqmcukuvy.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tbm5tZGN5Z212cnFtY3VrdXZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjgyNjcsImV4cCI6MjA5NDI0NDI2N30.UmsY9ECBtCK7kwi5dOSQ88rPZT8WOp06vgEn2mcaheI';
 
 const TIPOS = [
-  {id:'vac',  label:'Vacaciones',           cls:'vac',  icon:'🏖'},
-  {id:'prop', label:'Asuntos propios',      cls:'prop', icon:'🏠'},
-  {id:'enf',  label:'Enfermedad / baja',    cls:'enf',  icon:'🩺'},
-  {id:'exam', label:'Examen / formación',   cls:'exam', icon:'📚'},
-  {id:'mat',  label:'Maternidad/paternidad',cls:'mat',  icon:'👶'},
-  {id:'tras', label:'Traslado domicilio',   cls:'tras', icon:'📦'},
+  {id:'vac',  label:'Vacaciones',            cls:'vac',  icon:'🏖'},
+  {id:'prop', label:'Asuntos propios',       cls:'prop', icon:'🏠'},
+  {id:'enf',  label:'Enfermedad / baja',     cls:'enf',  icon:'🩺'},
+  {id:'exam', label:'Examen / formación',    cls:'exam', icon:'📚'},
+  {id:'mat',  label:'Maternidad/paternidad', cls:'mat',  icon:'👶'},
+  {id:'tras', label:'Traslado domicilio',    cls:'tras', icon:'📦'},
 ];
 
-let empleados = [];
+let session = null;
 let empActual = null;
 let fichajeActivo = null;
-let intervaloReloj;
 let tipoSel = null;
+let intervaloReloj = null;
 
-async function sb(path, opts={}) {
-  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer || 'return=representation',
-      ...opts.headers
-    },
-    method: opts.method || 'GET',
+function pad(n){ return String(n).padStart(2,'0'); }
+function fmtHM(d){ const dt=new Date(d); return pad(dt.getHours())+':'+pad(dt.getMinutes()); }
+function fmtDate(d){ return new Date(d).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}); }
+function horasDiff(a,b){ return ((new Date(b)-new Date(a))/3600000); }
+function initials(n){ return (n||'?').split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase(); }
+function avatarBg(n){ const c=['#dbeafe:#1a4f7a','#d8f3dc:#2d6a4f','#fce7f3:#7a2f5a','#fef3c7:#7a4f1a','#ede9fe:#4a2f7a','#fde8eb:#9b2335']; const i=(n||'A').charCodeAt(0)%c.length; return c[i].split(':'); }
+function toast(msg,dur=3000){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
+
+async function sbFetch(path, opts={}){
+  const tok = session ? session.access_token : SB_KEY;
+  const res = await fetch(SB_URL+'/rest/v1/'+path, {
+    headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+tok, 'Content-Type':'application/json', 'Prefer':opts.prefer||'return=representation', ...opts.headers },
+    method: opts.method||'GET',
     body: opts.body ? JSON.stringify(opts.body) : undefined
   });
-  if (!res.ok) { const e = await res.text(); throw new Error(e); }
-  const ct = res.headers.get('content-type')||'';
-  if (ct.includes('json')) return res.json();
+  if(!res.ok){ const e=await res.text(); throw new Error(e); }
+  const ct=res.headers.get('content-type')||'';
+  if(ct.includes('json')) return res.json();
   return null;
 }
 
-function pad(n){ return String(n).padStart(2,'0'); }
-function fmt(d){ return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()); }
-function fmtHM(d){ return pad(d.getHours())+':'+pad(d.getMinutes()); }
-function fmtDate(d){ const dd=new Date(d); return dd.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}); }
-function horasDiff(a,b){ return ((new Date(b)-new Date(a))/3600000).toFixed(1); }
-function initials(n){ return n.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase(); }
-function avatarColor(n){ const c=['#dbeafe:#1a4f7a','#d8f3dc:#2d6a4f','#fce7f3:#7a2f5a','#fef3c7:#7a4f1a','#ede9fe:#4a2f7a','#fde8eb:#9b2335']; const i=n.charCodeAt(0)%c.length; return c[i].split(':'); }
-
-function toast(msg, dur=3000){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), dur);
+async function sbAuth(path, body){
+  const res = await fetch(SB_URL+'/auth/v1/'+path, {
+    method:'POST',
+    headers:{ 'apikey':SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.json();
 }
 
-function tickReloj(){
-  const now=new Date();
-  document.getElementById('reloj').textContent=fmt(now);
-  if(fichajeActivo){
-    const h=((now-new Date(fichajeActivo))/3600000).toFixed(1);
-    document.getElementById('statusText').textContent='Trabajando · '+h+'h';
-  }
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  err.style.display='none';
+  if(!email||!pass){ err.textContent='Introduce email y contraseña'; err.style.display='block'; return; }
+  const data = await sbAuth('token?grant_type=password', {email, password:pass});
+  if(data.error){ err.textContent=data.error_description||data.error; err.style.display='block'; return; }
+  session = data;
+  await iniciarApp();
 }
 
-async function cargarEmpleados(){
-  empleados = await sb('empleados?select=*&activo=eq.true&order=nombre');
-  const sel = document.getElementById('empSelector');
-  sel.innerHTML = empleados.map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('');
-  if(empleados.length) { empActual = empleados[0]; renderSidebar(); await cargarFichajeActivo(); }
+async function doLogout(){
+  if(session) await fetch(SB_URL+'/auth/v1/logout',{ method:'POST', headers:{'apikey':SB_KEY,'Authorization':'Bearer '+session.access_token}});
+  session=null; empActual=null; fichajeActivo=null;
+  if(intervaloReloj) clearInterval(intervaloReloj);
+  document.getElementById('appView').style.display='none';
+  document.getElementById('loginView').style.display='flex';
+}
+
+async function doReset(){
+  const email = document.getElementById('resetEmail').value.trim();
+  const err = document.getElementById('resetErr');
+  if(!email){ err.textContent='Introduce tu email'; err.style.display='block'; return; }
+  await sbAuth('recover', {email});
+  toast('Email enviado. Revisa tu bandeja de entrada.');
+  showLogin();
+}
+
+function showReset(){ document.getElementById('loginView').style.display='none'; document.getElementById('resetView').style.display='flex'; }
+function showLogin(){ document.getElementById('resetView').style.display='none'; document.getElementById('loginView').style.display='flex'; }
+
+async function iniciarApp(){
+  try {
+    const userId = session.user.id;
+    const emps = await sbFetch(`empleados?user_id=eq.${userId}&limit=1`);
+    if(!emps||!emps.length){
+      document.getElementById('loginErr').textContent='Tu cuenta no está vinculada a ningún empleado. Contacta con el coordinador.';
+      document.getElementById('loginErr').style.display='block';
+      session=null; return;
+    }
+    empActual = emps[0];
+    document.getElementById('loginView').style.display='none';
+    document.getElementById('appView').style.display='flex';
+    renderSidebar();
+    mostrarNavMgr();
+    await cargarFichajeActivo();
+    await renderPagina('fichar');
+    await actualizarPendBadge();
+    intervaloReloj = setInterval(tickReloj,1000);
+    tickReloj();
+    const now=new Date();
+    const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    document.getElementById('fechaDisplay').textContent=dias[now.getDay()]+', '+now.getDate()+' de '+meses[now.getMonth()];
+    const fmt=d=>{const m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return d.getFullYear()+'-'+m+'-'+dd;};
+    const hoy=new Date(); document.getElementById('fIni').value=fmt(hoy); document.getElementById('fFin').value=fmt(hoy);
+  } catch(e){ toast('Error: '+e.message); }
 }
 
 function renderSidebar(){
   if(!empActual) return;
-  const [bg,tc] = avatarColor(empActual.nombre);
-  document.getElementById('sideAvatar').textContent = initials(empActual.nombre);
-  document.getElementById('sideAvatar').style.background = bg;
-  document.getElementById('sideAvatar').style.color = tc;
-  document.getElementById('sideName').textContent = empActual.nombre;
-  document.getElementById('sideRole').textContent = empActual.rol;
+  const [bg,tc]=avatarBg(empActual.nombre);
+  document.getElementById('sideAvatar').textContent=initials(empActual.nombre);
+  document.getElementById('sideAvatar').style.background=bg;
+  document.getElementById('sideAvatar').style.color=tc;
+  document.getElementById('sideName').textContent=empActual.nombre;
+  const roles={empleado:'empleado',manager:'manager',coordinador:'coordinador'};
+  document.getElementById('sideRoleLbl').textContent=roles[empActual.rol]||empActual.rol;
+  document.getElementById('sideRole').textContent=empActual.rol;
 }
 
-async function cambiarEmpleado(){
-  const id = document.getElementById('empSelector').value;
-  empActual = empleados.find(e=>e.id===id);
-  renderSidebar();
-  fichajeActivo = null;
-  resetFichaUI();
-  await cargarFichajeActivo();
-  renderPaginaActual();
+function mostrarNavMgr(){
+  const esMgr = ['coordinador','manager'].includes(empActual.rol);
+  ['navMgrSep','nav-equipo','nav-trabajadores','nav-aprobaciones','nav-informe'].forEach(id=>{
+    document.getElementById(id).style.display=esMgr?'':'none';
+  });
 }
 
-async function cargarFichajeActivo(){
-  if(!empActual) return;
-  const hoy = new Date().toISOString().split('T')[0];
-  const res = await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${hoy}T00:00:00&salida=is.null&order=entrada.desc&limit=1`);
-  if(res && res.length){
-    fichajeActivo = res[0];
-    setEstadoFichado(res[0].entrada);
-  } else {
-    fichajeActivo = null;
-    resetFichaUI();
+function tickReloj(){
+  const now=new Date();
+  document.getElementById('reloj').textContent=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+  if(fichajeActivo){
+    const h=horasDiff(fichajeActivo.entrada,new Date());
+    document.getElementById('statusText').textContent='Trabajando · '+h.toFixed(1)+'h';
   }
 }
 
+async function cargarFichajeActivo(){
+  const hoy=new Date().toISOString().split('T')[0];
+  const res=await sbFetch(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${hoy}T00:00:00&salida=is.null&order=entrada.desc&limit=1`);
+  if(res&&res.length){ fichajeActivo=res[0]; setEstadoFichado(res[0].entrada); }
+  else { fichajeActivo=null; resetFichaUI(); }
+}
+
 function setEstadoFichado(entrada){
-  const t = fmtHM(new Date(entrada));
-  document.getElementById('statusPill').className = 'status-pill in';
-  document.getElementById('statusDot').className = 'dot dot-in';
-  document.getElementById('fichaBtn').innerHTML = `<button class="btn-out" onclick="ficharSalida()">
-    <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    Fichar salida
-  </button>`;
+  document.getElementById('statusPill').className='status-pill in';
+  document.getElementById('statusDot').className='dot dot-in';
+  document.getElementById('fichaBtn').innerHTML=`<button class="btn-out" onclick="ficharSalida()">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Fichar salida</button>`;
   document.getElementById('fichaInfo').style.display='block';
-  document.getElementById('fichaInfo').textContent='Entrada registrada a las '+t;
+  document.getElementById('fichaInfo').textContent='Entrada registrada a las '+fmtHM(entrada);
 }
 
 function resetFichaUI(){
-  document.getElementById('statusPill').className = 'status-pill out';
-  document.getElementById('statusDot').className = 'dot dot-out';
-  document.getElementById('statusText').textContent = 'Sin fichar';
-  document.getElementById('fichaBtn').innerHTML = `<button class="btn-in" onclick="ficharEntrada()">
-    <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-    Fichar entrada
-  </button>`;
+  document.getElementById('statusPill').className='status-pill out';
+  document.getElementById('statusDot').className='dot dot-out';
+  document.getElementById('statusText').textContent='Sin fichar';
+  document.getElementById('fichaBtn').innerHTML=`<button class="btn-in" onclick="ficharEntrada()">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Fichar entrada</button>`;
   document.getElementById('fichaInfo').style.display='none';
 }
 
 async function ficharEntrada(){
-  if(!empActual){ toast('Selecciona un empleado'); return; }
-  const ahora = new Date().toISOString();
-  const res = await sb('fichajes', { method:'POST', body:{ empleado_id: empActual.id, entrada: ahora } });
-  if(res && res.length){ fichajeActivo = res[0]; setEstadoFichado(ahora); toast('✓ Entrada registrada a las '+fmtHM(new Date())); await cargarUltimosFichajes(); }
+  const res=await sbFetch('fichajes',{method:'POST',body:{empleado_id:empActual.id,entrada:new Date().toISOString()}});
+  if(res&&res.length){ fichajeActivo=res[0]; setEstadoFichado(res[0].entrada); toast('✓ Entrada registrada a las '+fmtHM(new Date())); await cargarUltimosFichajes(); }
 }
 
 async function ficharSalida(){
-  if(!fichajeActivo){ toast('No hay fichaje activo'); return; }
-  const ahora = new Date().toISOString();
-  await sb(`fichajes?id=eq.${fichajeActivo.id}`, { method:'PATCH', body:{ salida: ahora }, prefer:'return=minimal' });
-  const h = horasDiff(fichajeActivo.entrada, ahora);
+  if(!fichajeActivo) return;
+  const ahora=new Date().toISOString();
+  await sbFetch(`fichajes?id=eq.${fichajeActivo.id}`,{method:'PATCH',body:{salida:ahora},prefer:'return=minimal'});
+  const h=horasDiff(fichajeActivo.entrada,ahora).toFixed(1);
   toast('✓ Salida registrada · '+h+'h trabajadas');
-  fichajeActivo = null; resetFichaUI();
-  await cargarUltimosFichajes();
+  fichajeActivo=null; resetFichaUI(); await cargarUltimosFichajes();
 }
 
 async function cargarUltimosFichajes(){
-  if(!empActual) return;
-  const filas = await sb(`fichajes?empleado_id=eq.${empActual.id}&order=entrada.desc&limit=7`);
-  const tbody = document.getElementById('ultimosFichajes');
-  if(!filas || !filas.length){ tbody.innerHTML='<tr><td colspan="4" class="empty">Sin fichajes registrados</td></tr>'; return; }
-  tbody.innerHTML = filas.map(f=>{
-    const h = f.salida ? parseFloat(horasDiff(f.entrada,f.salida)) : null;
-    const ok = h && h >= (empActual.horas_jornada||8)-0.25;
-    return `<tr>
-      <td>${fmtDate(f.entrada)}</td>
-      <td><span class="time-tag">↳ ${fmtHM(new Date(f.entrada))}</span></td>
-      <td>${f.salida?'<span class="time-tag">⬤ '+fmtHM(new Date(f.salida))+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td>
-      <td>${h?'<span class="'+(ok?'horas-ok':'horas-ko')+'">'+h.toFixed(1)+'h</span>':'—'}</td>
-    </tr>`;
+  const f=await sbFetch(`fichajes?empleado_id=eq.${empActual.id}&order=entrada.desc&limit=7`);
+  const tb=document.getElementById('ultimosFichajes');
+  if(!f||!f.length){tb.innerHTML='<tr><td colspan="4" class="empty">Sin fichajes</td></tr>';return;}
+  tb.innerHTML=f.map(r=>{
+    const h=r.salida?horasDiff(r.entrada,r.salida):null;
+    const ok=h&&h>=(empActual.horas_semanales||40)/5-0.25;
+    return `<tr><td>${fmtDate(r.entrada)}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td>
+    <td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td>
+    <td>${h?'<span class="'+(ok?'horas-ok':'horas-ko')+'">'+h.toFixed(1)+'h</span>':'—'}</td></tr>`;
   }).join('');
 }
 
 async function cargarStatsEmp(){
-  if(!empActual) return;
-  const mes = new Date(); const ini = new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
-  const fichajes = await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&salida=not.is.null`);
-  const totalH = fichajes ? fichajes.reduce((a,f)=>a+parseFloat(horasDiff(f.entrada,f.salida)),0) : 0;
-  const previstas = new Date().getDate() * (empActual.horas_jornada||8);
-  const saldo = (totalH - previstas).toFixed(1);
-  const vacRes = await sb(`solicitudes?empleado_id=eq.${empActual.id}&tipo_id=eq.vac&estado=eq.aprobada`);
-  const vacUsadas = vacRes ? vacRes.reduce((a,s)=>a+s.dias,0) : 0;
-  document.getElementById('statsEmp').innerHTML = `
+  const mes=new Date(); const ini=new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
+  const f=await sbFetch(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&salida=not.is.null`);
+  const totalH=f?f.reduce((a,r)=>a+horasDiff(r.entrada,r.salida),0):0;
+  const jornada=(empActual.horas_semanales||40)/5;
+  const previstas=new Date().getDate()*jornada;
+  const saldo=totalH-previstas;
+  document.getElementById('statsEmp').innerHTML=`
     <div class="stat-card"><div class="lbl">Horas este mes</div><div class="val">${totalH.toFixed(0)}</div><div class="sub">de ${Math.round(previstas)} previstas</div></div>
-    <div class="stat-card"><div class="lbl">Saldo</div><div class="val" style="color:${parseFloat(saldo)>=0?'var(--green)':'var(--red)'}">${parseFloat(saldo)>=0?'+':''}${saldo}h</div><div class="sub">este mes</div></div>
-    <div class="stat-card"><div class="lbl">Vacaciones usadas</div><div class="val">${vacUsadas}</div><div class="sub">días este año</div></div>
-  `;
+    <div class="stat-card"><div class="lbl">Saldo</div><div class="val" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo.toFixed(1)}h</div><div class="sub">este mes</div></div>
+    <div class="stat-card"><div class="lbl">Jornada semanal</div><div class="val">${empActual.horas_semanales||40}h</div><div class="sub">según contrato</div></div>
+    <div class="stat-card"><div class="lbl">Contrato</div><div class="val" style="font-size:16px;letter-spacing:0">${empActual.tipo_contrato||'indefinido'}</div><div class="sub">${empActual.fecha_fin_contrato?'hasta '+fmtDate(empActual.fecha_fin_contrato):'sin fecha fin'}</div></div>`;
 }
 
 async function cargarRegistro(){
-  if(!empActual) return;
-  const mes = new Date(); const ini = new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
-  const fichajes = await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&order=entrada.desc`);
-  const tbody = document.getElementById('regHistorico');
-  if(!fichajes||!fichajes.length){ tbody.innerHTML='<tr><td colspan="5" class="empty">Sin registros este mes</td></tr>'; return; }
-  let totalH=0; const jornada = empActual.horas_jornada||8;
-  tbody.innerHTML = fichajes.map(f=>{
-    const h = f.salida ? parseFloat(horasDiff(f.entrada,f.salida)) : null;
-    if(h) totalH+=h;
-    const ok = h && h >= jornada-0.25;
-    return `<tr>
-      <td>${fmtDate(f.entrada)}</td>
-      <td><span class="time-tag">${fmtHM(new Date(f.entrada))}</span></td>
-      <td>${f.salida?'<span class="time-tag">'+fmtHM(new Date(f.salida))+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td>
-      <td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td>
-      <td><span class="badge ${ok?'b-apro':'b-dene'}">${ok?'ok':'incompleto'}</span></td>
-    </tr>`;
+  const mes=new Date(); const ini=new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
+  const f=await sbFetch(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&order=entrada.desc`);
+  const tb=document.getElementById('regHistorico');
+  if(!f||!f.length){tb.innerHTML='<tr><td colspan="5" class="empty">Sin registros</td></tr>';return;}
+  const jornada=(empActual.horas_semanales||40)/5;
+  let tot=0;
+  tb.innerHTML=f.map(r=>{
+    const h=r.salida?horasDiff(r.entrada,r.salida):null;
+    if(h) tot+=h;
+    const ok=h&&h>=jornada-0.25;
+    return `<tr><td>${fmtDate(r.entrada)}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td>
+    <td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td>
+    <td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td>
+    <td><span class="badge ${ok?'b-apro':'b-dene'}">${ok?'ok':'incompleto'}</span></td></tr>`;
   }).join('');
-  const previstas = new Date().getDate() * jornada;
-  const saldo = totalH - previstas;
-  const pct = Math.min(100, Math.round(totalH/previstas*100));
-  document.getElementById('saldoFill').style.width = pct+'%';
-  document.getElementById('saldoFill').style.background = saldo>=0?'var(--green)':'var(--red)';
-  document.getElementById('saldoVal').textContent = (saldo>=0?'+':'')+saldo.toFixed(1)+'h';
-  document.getElementById('saldoVal').style.color = saldo>=0?'var(--green)':'var(--red)';
+  const prev=new Date().getDate()*jornada; const saldo=tot-prev;
+  const pct=Math.min(100,Math.round(tot/prev*100));
+  document.getElementById('saldoFill').style.width=pct+'%';
+  document.getElementById('saldoFill').style.background=saldo>=0?'var(--green)':'var(--red)';
+  document.getElementById('saldoVal').textContent=(saldo>=0?'+':'')+saldo.toFixed(1)+'h';
+  document.getElementById('saldoVal').style.color=saldo>=0?'var(--green)':'var(--red)';
 }
 
 function buildTipoGrid(){
-  document.getElementById('tipoGrid').innerHTML = TIPOS.map(t=>`
+  document.getElementById('tipoGrid').innerHTML=TIPOS.map(t=>`
     <button class="tipo-opt${tipoSel===t.id?' sel '+t.cls:''}" onclick="selTipo('${t.id}')">
-      <span style="font-size:15px">${t.icon}</span>${t.label}
-    </button>`).join('');
+      <span style="font-size:15px">${t.icon}</span>${t.label}</button>`).join('');
 }
-function selTipo(id){ tipoSel=id; buildTipoGrid(); }
+function selTipo(id){tipoSel=id;buildTipoGrid();}
 
 async function enviarSolicitud(){
-  if(!tipoSel){ toast('Selecciona el tipo de ausencia'); return; }
-  if(!empActual){ toast('Selecciona un empleado'); return; }
-  const ini = document.getElementById('fIni').value;
-  const fin = document.getElementById('fFin').value;
-  if(!ini||!fin){ toast('Indica las fechas'); return; }
-  const com = document.getElementById('fComent').value;
-  await sb('solicitudes', { method:'POST', body:{ empleado_id:empActual.id, tipo_id:tipoSel, fecha_inicio:ini, fecha_fin:fin, comentario:com||null }});
-  toast('✓ Solicitud enviada'); tipoSel=null; buildTipoGrid();
-  document.getElementById('fComent').value='';
+  if(!tipoSel){toast('Selecciona el tipo de ausencia');return;}
+  const ini=document.getElementById('fIni').value, fin=document.getElementById('fFin').value;
+  if(!ini||!fin){toast('Indica las fechas');return;}
+  const com=document.getElementById('fComent').value;
+  await sbFetch('solicitudes',{method:'POST',body:{empleado_id:empActual.id,tipo_id:tipoSel,fecha_inicio:ini,fecha_fin:fin,comentario:com||null}});
+  toast('✓ Solicitud enviada'); tipoSel=null; buildTipoGrid(); document.getElementById('fComent').value='';
   await cargarMisSolicitudes(); await actualizarPendBadge();
 }
 
 async function cargarMisSolicitudes(){
-  if(!empActual) return;
-  const res = await sb(`solicitudes?empleado_id=eq.${empActual.id}&order=creado_en.desc&limit=10`);
-  const cont = document.getElementById('misSolicitudes');
-  if(!res||!res.length){ cont.innerHTML='<div class="empty">No tienes solicitudes registradas.</div>'; return; }
-  const tipo = (id)=>TIPOS.find(t=>t.id===id)||{label:id,icon:'📋'};
-  cont.innerHTML = res.map(s=>`
+  const res=await sbFetch(`solicitudes?empleado_id=eq.${empActual.id}&order=creado_en.desc&limit=15`);
+  const cont=document.getElementById('misSolicitudes');
+  if(!res||!res.length){cont.innerHTML='<div class="empty">No tienes solicitudes.</div>';return;}
+  const tipo=id=>TIPOS.find(t=>t.id===id)||{label:id,icon:'📋'};
+  cont.innerHTML=res.map(s=>`
     <div class="perm-card">
       <div class="perm-info">
-        <div class="perm-title">${tipo(s.tipo_id).icon} ${tipo(s.tipo_id).label} <span class="badge b-${s.estado==='pendiente'?'pend':s.estado==='aprobada'?'apro':'dene'}">${s.estado}</span></div>
+        <div class="perm-title">${tipo(s.tipo_id).icon} ${tipo(s.tipo_id).label} <span class="badge b-${s.estado}">${s.estado}</span></div>
         <div class="perm-sub">${s.fecha_inicio} → ${s.fecha_fin} · ${s.dias} día${s.dias>1?'s':''}${s.comentario?' · '+s.comentario:''}</div>
       </div>
     </div>`).join('');
 }
 
 async function cargarEquipo(){
-  const emps = await sb('empleados?activo=eq.true&order=nombre');
-  const hoy = new Date().toISOString().split('T')[0];
-  const fichHoy = await sb(`fichajes?entrada=gte.${hoy}T00:00:00&order=entrada.desc`);
-  const permHoy = await sb(`solicitudes?fecha_inicio=lte.${hoy}&fecha_fin=gte.${hoy}&estado=eq.aprobada`);
-  const fichados = fichHoy ? [...new Set(fichHoy.map(f=>f.empleado_id))] : [];
-  const ausentes = permHoy ? permHoy.map(p=>p.empleado_id) : [];
-  document.getElementById('statsMgr').innerHTML = `
-    <div class="stat-card"><div class="lbl">Empleados</div><div class="val">${emps.length}</div><div class="sub">en plantilla</div></div>
+  const emps=await sbFetch('empleados?activo=eq.true&order=nombre');
+  const hoy=new Date().toISOString().split('T')[0];
+  const fichHoy=await sbFetch(`fichajes?entrada=gte.${hoy}T00:00:00&order=entrada.desc`);
+  const permHoy=await sbFetch(`solicitudes?fecha_inicio=lte.${hoy}&fecha_fin=gte.${hoy}&estado=eq.aprobada`);
+  const fichados=fichHoy?[...new Set(fichHoy.map(f=>f.empleado_id))]:[];
+  const ausentes=permHoy?permHoy.map(p=>p.empleado_id):[];
+  document.getElementById('statsMgr').innerHTML=`
+    <div class="stat-card"><div class="lbl">Empleados</div><div class="val">${emps.length}</div><div class="sub">activos</div></div>
     <div class="stat-card"><div class="lbl">Fichados hoy</div><div class="val">${fichados.length}</div><div class="sub">de ${emps.length}</div></div>
-    <div class="stat-card"><div class="lbl">Ausentes</div><div class="val">${ausentes.length}</div><div class="sub">con permiso</div></div>
-  `;
-  const cont = document.getElementById('equipoList');
-  cont.innerHTML = emps.map(e=>{
-    const [bg,tc]=avatarColor(e.nombre);
-    const enAusencia = ausentes.includes(e.id);
-    const fichado = fichados.includes(e.id);
-    const estado = enAusencia?'vacaciones': fichado?'fichado':'sin_fichar';
-    const estadoLabel = {fichado:'Fichado',sin_fichar:'Sin fichar',vacaciones:'Con permiso'}[estado];
-    const entrada = fichHoy ? fichHoy.find(f=>f.empleado_id===e.id) : null;
-    return `<div class="emp-row">
-      <div class="avatar" style="background:${bg};color:${tc}">${initials(e.nombre)}</div>
-      <div style="flex:1"><div class="emp-name">${e.nombre}</div><div class="emp-dept">${e.departamento||e.rol}</div></div>
-      <span class="estado-chip estado-${estado}">${estadoLabel}</span>
-      ${entrada?'<span style="font-size:12px;font-family:var(--mono);color:var(--text3)">desde '+fmtHM(new Date(entrada.entrada))+'</span>':''}
-    </div>`;
+    <div class="stat-card"><div class="lbl">Con permiso</div><div class="val">${ausentes.length}</div><div class="sub">hoy</div></div>`;
+  document.getElementById('equipoBody').innerHTML=emps.map(e=>{
+    const [bg,tc]=avatarBg(e.nombre);
+    const ausente=ausentes.includes(e.id), fich=fichados.includes(e.id);
+    const est=ausente?'permiso':fich?'fichado':'sin_fichar';
+    const estLabel={fichado:'Fichado',sin_fichar:'Sin fichar',permiso:'Con permiso'}[est];
+    const estColor={fichado:'var(--green)',sin_fichar:'var(--text3)',permiso:'var(--amber)'}[est];
+    const ent=fichHoy?fichHoy.find(f=>f.empleado_id===e.id):null;
+    const h=ent&&ent.entrada?horasDiff(ent.entrada,new Date()):0;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc}">${initials(e.nombre)}</div><div><div style="font-weight:500">${e.nombre}</div><div style="font-size:11px;color:var(--text3);font-family:var(--mono)">${e.departamento||e.rol}</div></div></div></td>
+      <td><span style="font-size:12px;color:${estColor}">${estLabel}</span></td>
+      <td style="font-family:var(--mono);font-size:12px">${ent?fmtHM(ent.entrada):'—'}</td>
+      <td style="font-family:var(--mono);font-size:12px">${ent&&!ent.salida?h.toFixed(1)+'h':'—'}</td></tr>`;
+  }).join('');
+}
+
+async function cargarTrabajadores(){
+  const emps=await sbFetch('empleados?order=nombre');
+  document.getElementById('trabajadoresBody').innerHTML=emps.map(e=>{
+    const [bg,tc]=avatarBg(e.nombre);
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc}">${initials(e.nombre)}</div><div><div style="font-weight:500">${e.nombre}</div><div style="font-size:11px;color:var(--text3)">${e.email}</div></div></div></td>
+      <td><span class="badge b-${e.rol}">${e.rol}</span></td>
+      <td><span class="badge b-${e.tipo_contrato==='temporal'?'temp':'indef'}">${e.tipo_contrato||'indefinido'}</span></td>
+      <td style="font-family:var(--mono);font-size:12px">${e.horas_semanales||40}h</td>
+      <td style="font-size:12px">${e.fecha_inicio_contrato?fmtDate(e.fecha_inicio_contrato):'—'}</td>
+      <td style="font-size:12px">${e.fecha_fin_contrato?fmtDate(e.fecha_fin_contrato):'—'}</td>
+      <td><button class="btn sm" onclick='openModalEditar(${JSON.stringify(e)})'>Editar</button></td></tr>`;
   }).join('');
 }
 
 async function cargarAprobaciones(){
-  const pend = await sb('solicitudes?estado=eq.pendiente&order=creado_en.asc');
-  const cont = document.getElementById('aprobList');
-  if(!pend||!pend.length){ cont.innerHTML='<div class="empty">✓ No hay solicitudes pendientes</div>'; return; }
-  const tipo = (id)=>TIPOS.find(t=>t.id===id)||{label:id,icon:'📋'};
-  const empMap = {}; empleados.forEach(e=>empMap[e.id]=e);
-  cont.innerHTML = pend.map(s=>{
-    const emp = empMap[s.empleado_id]||{nombre:'Empleado',id:''};
-    const [bg,tc]=avatarColor(emp.nombre);
+  const pend=await sbFetch('solicitudes?estado=eq.pendiente&order=creado_en.asc');
+  const cont=document.getElementById('aprobList');
+  if(!pend||!pend.length){cont.innerHTML='<div class="empty">✓ No hay solicitudes pendientes</div>';return;}
+  const empIds=[...new Set(pend.map(s=>s.empleado_id))];
+  const emps=await sbFetch(`empleados?id=in.(${empIds.join(',')})`);
+  const empMap={}; emps.forEach(e=>empMap[e.id]=e);
+  const tipo=id=>TIPOS.find(t=>t.id===id)||{label:id,icon:'📋'};
+  cont.innerHTML=pend.map(s=>{
+    const emp=empMap[s.empleado_id]||{nombre:'?',id:''};
+    const [bg,tc]=avatarBg(emp.nombre);
     return `<div class="perm-card" id="ap${s.id}">
-      <div class="avatar" style="background:${bg};color:${tc};width:34px;height:34px;flex-shrink:0">${initials(emp.nombre)}</div>
+      <div class="avatar lg" style="background:${bg};color:${tc}">${initials(emp.nombre)}</div>
       <div class="perm-info">
         <div class="perm-title">${emp.nombre} · ${tipo(s.tipo_id).icon} ${tipo(s.tipo_id).label}</div>
         <div class="perm-sub">${s.fecha_inicio} → ${s.fecha_fin} · ${s.dias} día${s.dias>1?'s':''}${s.comentario?' · '+s.comentario:''}</div>
@@ -613,71 +766,143 @@ async function cargarAprobaciones(){
       <div class="perm-actions">
         <button class="btn sm approve" onclick="resolverSol('${s.id}','aprobada')">✓ Aprobar</button>
         <button class="btn sm deny" onclick="resolverSol('${s.id}','denegada')">✕ Denegar</button>
-      </div>
-    </div>`;
+      </div></div>`;
   }).join('');
 }
 
-async function resolverSol(id, estado){
-  await sb(`solicitudes?id=eq.${id}`, { method:'PATCH', body:{ estado, revisado_por: empActual?.id }, prefer:'return=minimal' });
-  toast(estado==='aprobada'?'✓ Solicitud aprobada':'Solicitud denegada');
+async function resolverSol(id,estado){
+  await sbFetch(`solicitudes?id=eq.${id}`,{method:'PATCH',body:{estado,revisado_por:empActual.id},prefer:'return=minimal'});
+  toast(estado==='aprobada'?'✓ Aprobada':'Denegada');
   await cargarAprobaciones(); await actualizarPendBadge();
 }
 
 async function actualizarPendBadge(){
-  const pend = await sb('solicitudes?estado=eq.pendiente&select=id');
-  const n = pend ? pend.length : 0;
-  const b = document.getElementById('pendBadge');
+  if(!empActual||!['coordinador','manager'].includes(empActual.rol)) return;
+  const p=await sbFetch('solicitudes?estado=eq.pendiente&select=id');
+  const n=p?p.length:0;
+  const b=document.getElementById('pendBadge');
   b.textContent=n; b.style.display=n?'':'none';
 }
 
 async function cargarInforme(){
-  const mes = new Date();
-  document.getElementById('mesInforme').textContent = mes.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
-  const ini = new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
-  const fin = new Date(mes.getFullYear(),mes.getMonth()+1,0).toISOString();
-  const emps = await sb('empleados?activo=eq.true&order=nombre');
-  const fichajes = await sb(`fichajes?entrada=gte.${ini}&salida=not.is.null`);
-  const ausencias = await sb(`solicitudes?fecha_inicio=gte.${ini.split('T')[0]}&estado=eq.aprobada`);
-  const diasMes = new Date().getDate();
-  document.getElementById('informeBody').innerHTML = emps.map(e=>{
-    const myF = fichajes ? fichajes.filter(f=>f.empleado_id===e.id) : [];
-    const realH = myF.reduce((a,f)=>a+parseFloat(horasDiff(f.entrada,f.salida)),0);
-    const prevH = diasMes*(e.horas_jornada||8);
-    const saldo = realH-prevH;
-    const myA = ausencias ? ausencias.filter(a=>a.empleado_id===e.id).reduce((a,s)=>a+s.dias,0) : 0;
-    const [bg,tc]=avatarColor(e.nombre);
+  const mes=new Date();
+  document.getElementById('mesInforme').textContent=mes.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+  const ini=new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
+  const emps=await sbFetch('empleados?activo=eq.true&order=nombre');
+  const fich=await sbFetch(`fichajes?entrada=gte.${ini}&salida=not.is.null`);
+    const aus=await sbFetch(`solicitudes?fecha_inicio=gte.${ini.split('T')[0]}&estado=eq.aprobada`);
+  const dias=new Date().getDate();
+  document.getElementById('informeBody').innerHTML=emps.map(e=>{
+    const myF=fich?fich.filter(f=>f.empleado_id===e.id):[];
+    const realH=myF.reduce((a,f)=>a+horasDiff(f.entrada,f.salida),0);
+    const jornada=(e.horas_semanales||40)/5;
+    const prev=dias*jornada; const saldo=realH-prev;
+    const myA=aus?aus.filter(a=>a.empleado_id===e.id).reduce((a,s)=>a+s.dias,0):0;
+    const [bg,tc]=avatarBg(e.nombre);
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc};width:24px;height:24px;font-size:9px">${initials(e.nombre)}</div>${e.nombre}</div></td>
-      <td style="font-family:var(--mono);font-size:12px">${Math.round(prevH)}h</td>
+      <td><span class="badge b-${e.tipo_contrato==='temporal'?'temp':'indef'}">${e.tipo_contrato||'indefinido'}</span></td>
+      <td style="font-family:var(--mono);font-size:12px">${Math.round(prev)}h</td>
       <td style="font-family:var(--mono);font-size:12px">${realH.toFixed(1)}h</td>
       <td style="font-family:var(--mono);font-size:12px;color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo.toFixed(1)}h</td>
-      <td style="font-size:12px">${myA>0?myA+'d':'—'}</td>
-    </tr>`;
+      <td style="font-size:12px">${myA>0?myA+'d':'—'}</td></tr>`;
   }).join('');
 }
 
-function exportarExcel(){
-  const rows = [['Empleado','Previstas','Realizadas','Saldo','Ausencias']];
-  document.querySelectorAll('#informeBody tr').forEach(tr=>{
-    rows.push(Array.from(tr.cells).map(td=>td.innerText.trim()));
-  });
-  let csv = rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='informe_jornada_'+new Date().toISOString().split('T')[0]+'.csv';
-  a.click(); toast('✓ Informe exportado');
+function exportarCSV(){
+  const rows=[['Empleado','Contrato','H.previstas','H.realizadas','Saldo','Ausencias']];
+  document.querySelectorAll('#informeBody tr').forEach(tr=>rows.push(Array.from(tr.cells).map(td=>td.innerText.trim())));
+  const csv=rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='informe_'+new Date().toISOString().split('T')[0]+'.csv'; a.click(); toast('✓ Exportado');
 }
 
-let paginaActual = 'fichar';
-const pageTitles = {fichar:'Fichar',registro:'Mi registro',permisos:'Permisos y ausencias',equipo:'Estado del equipo',aprobaciones:'Aprobaciones',informe:'Informe mensual'};
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function toggleFechaFin(){ document.getElementById('altaFechaFinWrap').style.display=document.getElementById('altaTipoContrato').value==='temporal'?'':'none'; }
+function toggleFechaFinEdit(){ document.getElementById('editFechaFinWrap').style.display=document.getElementById('editTipoContrato').value==='temporal'?'':'none'; }
 
-async function renderPaginaActual(){
-  switch(paginaActual){
+function openModalAlta(){
+  document.getElementById('altaFechaFinWrap').style.display='none';
+  const fmt=d=>{const m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return d.getFullYear()+'-'+m+'-'+dd;};
+  document.getElementById('altaFechaIni').value=fmt(new Date());
+  openModal('modalAlta');
+}
+
+async function darDeAlta(){
+  const nombre=document.getElementById('altaNombre').value.trim();
+  const email=document.getElementById('altaEmail').value.trim();
+  if(!nombre||!email){toast('Nombre y email son obligatorios');return;}
+  const body={
+    nombre, email,
+    rol:document.getElementById('altaRol').value,
+    departamento:document.getElementById('altaDept').value||null,
+    telefono:document.getElementById('altaTel').value||null,
+    dni:document.getElementById('altaDni').value||null,
+    tipo_contrato:document.getElementById('altaTipoContrato').value,
+    horas_semanales:parseInt(document.getElementById('altaHoras').value)||40,
+    fecha_inicio_contrato:document.getElementById('altaFechaIni').value||null,
+    fecha_fin_contrato:document.getElementById('altaTipoContrato').value==='temporal'?document.getElementById('altaFechaFin').value||null:null,
+    activo:true
+  };
+  try {
+    await sbFetch('empleados',{method:'POST',body});
+    const invBody={ action:'magiclink', email, data:{ redirect_to: window.location.href } };
+    await fetch(SB_URL+'/auth/v1/admin/users',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify({email,password:Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2).toUpperCase()+'1!',email_confirm:false})});
+    toast('✓ Trabajador dado de alta. Se enviará email de acceso.');
+    closeModal('modalAlta'); await cargarTrabajadores();
+  } catch(e){ toast('Error: '+e.message); }
+}
+
+function openModalEditar(emp){
+  document.getElementById('editId').value=emp.id;
+  document.getElementById('editNombre').value=emp.nombre||'';
+  document.getElementById('editEmail').value=emp.email||'';
+  document.getElementById('editRol').value=emp.rol||'empleado';
+  document.getElementById('editDept').value=emp.departamento||'';
+  document.getElementById('editTel').value=emp.telefono||'';
+  document.getElementById('editDni').value=emp.dni||'';
+  document.getElementById('editTipoContrato').value=emp.tipo_contrato||'indefinido';
+  document.getElementById('editHoras').value=emp.horas_semanales||40;
+  document.getElementById('editFechaIni').value=emp.fecha_inicio_contrato||'';
+  document.getElementById('editFechaFin').value=emp.fecha_fin_contrato||'';
+  document.getElementById('editFechaFinWrap').style.display=emp.tipo_contrato==='temporal'?'':'none';
+  openModal('modalEditar');
+}
+
+async function guardarEdicion(){
+  const id=document.getElementById('editId').value;
+  const body={
+    nombre:document.getElementById('editNombre').value,
+    rol:document.getElementById('editRol').value,
+    departamento:document.getElementById('editDept').value||null,
+    telefono:document.getElementById('editTel').value||null,
+    dni:document.getElementById('editDni').value||null,
+    tipo_contrato:document.getElementById('editTipoContrato').value,
+    horas_semanales:parseInt(document.getElementById('editHoras').value)||40,
+    fecha_inicio_contrato:document.getElementById('editFechaIni').value||null,
+    fecha_fin_contrato:document.getElementById('editTipoContrato').value==='temporal'?document.getElementById('editFechaFin').value||null:null,
+  };
+  await sbFetch(`empleados?id=eq.${id}`,{method:'PATCH',body,prefer:'return=minimal'});
+  toast('✓ Datos actualizados'); closeModal('modalEditar'); await cargarTrabajadores();
+}
+
+async function desactivarTrabajador(){
+  if(!confirm('¿Seguro que quieres desactivar este trabajador?')) return;
+  const id=document.getElementById('editId').value;
+  await sbFetch(`empleados?id=eq.${id}`,{method:'PATCH',body:{activo:false},prefer:'return=minimal'});
+  toast('Trabajador desactivado'); closeModal('modalEditar'); await cargarTrabajadores();
+}
+
+const pageTitles={fichar:'Fichar',registro:'Mi registro',permisos:'Permisos y ausencias',equipo:'Estado del equipo',trabajadores:'Trabajadores',aprobaciones:'Aprobaciones',informe:'Informe mensual'};
+
+async function renderPagina(name){
+  switch(name){
     case 'fichar': await cargarUltimosFichajes(); await cargarStatsEmp(); break;
     case 'registro': await cargarRegistro(); break;
     case 'permisos': buildTipoGrid(); await cargarMisSolicitudes(); break;
     case 'equipo': await cargarEquipo(); break;
+    case 'trabajadores': await cargarTrabajadores(); break;
     case 'aprobaciones': await cargarAprobaciones(); break;
     case 'informe': await cargarInforme(); break;
   }
@@ -688,31 +913,11 @@ function showPage(name, btn){
   btn.classList.add('active');
   document.querySelectorAll('[id^="page-"]').forEach(p=>p.style.display='none');
   document.getElementById('page-'+name).style.display='';
-  document.getElementById('pageTitle').textContent = pageTitles[name]||name;
-  paginaActual = name;
-  renderPaginaActual();
+  document.getElementById('pageTitle').textContent=pageTitles[name]||name;
+  renderPagina(name);
 }
 
-async function init(){
-  const now=new Date();
-  const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  document.getElementById('fechaDisplay').textContent=dias[now.getDay()]+', '+now.getDate()+' de '+meses[now.getMonth()];
-  const hoy=new Date(); hoy.setDate(hoy.getDate());
-  const fmt2=d=>{const m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return d.getFullYear()+'-'+m+'-'+dd;};
-  document.getElementById('fIni').value=fmt2(hoy);
-  document.getElementById('fFin').value=fmt2(hoy);
-  intervaloReloj=setInterval(tickReloj,1000); tickReloj();
-  try {
-    await cargarEmpleados();
-    await cargarUltimosFichajes();
-    await cargarStatsEmp();
-    await actualizarPendBadge();
-  } catch(e){
-    toast('Error conectando con Supabase: '+e.message);
-  }
-}
-init();
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open')); }});
 </script>
 </body>
 </html>
