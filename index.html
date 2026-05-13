@@ -287,15 +287,22 @@ function contratoActivoDeHoy(contratos, empleadoId){
 
 // Calcula horas previstas entre dos fechas teniendo en cuenta cambios de contrato
 // Para cada día laborable busca qué contrato estaba activo ese día
+function fechaLocal(d){
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+dd;
+}
+
 function calcHorasPrevistas(contratos, fechaIni, fechaFin){
   if(!contratos||!contratos.length) return 0;
+  // Solo contar hasta hoy, nunca días futuros
+  const hoy=new Date(); hoy.setHours(23,59,59,0);
+  const fin=fechaFin<hoy?new Date(fechaFin):hoy;
   let total=0;
   const d=new Date(fechaIni);
-  const fin=new Date(fechaFin);
   while(d<=fin){
     const dow=d.getDay();
     if(dow>=1&&dow<=5){
-      const ds=d.toISOString().split('T')[0];
+      const ds=fechaLocal(d);
       const c=contratos.find(ct=>ct.fecha_inicio<=ds&&(!ct.fecha_fin||ct.fecha_fin>=ds));
       if(c) total+=c.horas_semanales/5;
     }
