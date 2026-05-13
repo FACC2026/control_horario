@@ -267,7 +267,7 @@ async function sb(path,opts={}){
 
 // Obtener contrato activo de un empleado hoy
 async function getContratoActivo(empleadoId){
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE');
   const res=await sb(`contratos?empleado_id=eq.${empleadoId}&activo=eq.true&fecha_inicio=lte.${hoy}&order=fecha_inicio.desc&limit=10`);
   if(!res||!res.length)return null;
   // Incluir contratos cuya fecha_fin es hoy o posterior, o sin fecha_fin
@@ -276,7 +276,7 @@ async function getContratoActivo(empleadoId){
 
 // Versión rápida para el equipo (sin async individual)
 function contratoActivoDeHoy(contratos, empleadoId){
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE');
   return (contratos||[]).filter(c=>
     c.empleado_id===empleadoId &&
     c.activo &&
@@ -361,7 +361,7 @@ async function cargarFichajeActivo(){
     infoEl.innerHTML=`<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg><span>Sin contrato activo — no puede fichar</span>`;
   }
   // Fichaje activo
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE');
   const res=await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${hoy}T00:00:00&salida=is.null&order=entrada.desc&limit=1`);
   if(res&&res.length){fichajeActivo=res[0];setEstadoFichado(res[0].entrada)}
   else{fichajeActivo=null;resetFichaUI(!!contrato)}
@@ -479,7 +479,7 @@ async function cargarMisSolicitudes(){
 
 async function cargarEquipo(){
   const emps=await sb('empleados?activo=eq.true&order=nombre');
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE');
   const fichHoy=await sb(`fichajes?entrada=gte.${hoy}T00:00:00&order=entrada.desc`);
   const permHoy=await sb(`solicitudes?fecha_inicio=lte.${hoy}&fecha_fin=gte.${hoy}&estado=eq.aprobada`);
   const contratos=await sb(`contratos?activo=eq.true&fecha_inicio=lte.${hoy}&order=fecha_inicio.desc`);
@@ -509,7 +509,7 @@ async function cargarEquipo(){
 
 async function cargarTrabajadores(){
   const emps=await sb('empleados?order=nombre');
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE');
   const contratos=await sb('contratos?order=empleado_id,fecha_inicio.desc');
   const contratoMap={};
   if(contratos)contratos.forEach(c=>{
@@ -557,7 +557,7 @@ async function openModalContratos(emp){
 
 async function cargarContratosModal(empId){
   const cs=await sb(`contratos?empleado_id=eq.${empId}&order=fecha_inicio.desc`);
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE'); // siempre YYYY-MM-DD sin zona horaria
   const cont=document.getElementById('listaContratos');
   if(!cs||!cs.length){cont.innerHTML='<div class="empty">Sin contratos registrados.</div>';return}
   cont.innerHTML=cs.map(c=>{
@@ -627,7 +627,7 @@ async function actualizarPendBadge(){
 async function cargarInforme(){
   const mes=new Date();document.getElementById('mesInforme').textContent=mes.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
   const ini=new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
-  const hoy=new Date().toISOString().split('T')[0];
+  const hoy=new Date().toLocaleDateString('sv-SE');
   const emps=await sb('empleados?activo=eq.true&order=nombre');
   const fich=await sb(`fichajes?entrada=gte.${ini}&salida=not.is.null`);
   const aus=await sb(`solicitudes?fecha_inicio=gte.${ini.split('T')[0]}&estado=eq.aprobada`);
@@ -656,7 +656,7 @@ function exportarCSV(){
   const rows=[['Empleado','Contrato','H.previstas','H.realizadas','Saldo','Ausencias']];
   document.querySelectorAll('#informeBody tr').forEach(tr=>rows.push(Array.from(tr.cells).map(td=>td.innerText.trim())));
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
-  a.download='informe_'+new Date().toISOString().split('T')[0]+'.csv';a.click();toast('✓ Exportado');
+  a.download='informe_'+new Date().toLocaleDateString('sv-SE')+'.csv';a.click();toast('✓ Exportado');
 }
 
 function openModal(id){document.getElementById(id).classList.add('open')}
