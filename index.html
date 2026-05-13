@@ -562,13 +562,16 @@ async function cargarContratosModal(empId){
   if(!cs||!cs.length){cont.innerHTML='<div class="empty">Sin contratos registrados.</div>';return}
   cont.innerHTML=cs.map(c=>{
     const esActivo=c.activo&&c.fecha_inicio<=hoy&&(!c.fecha_fin||c.fecha_fin>=hoy);
+    const puedeActivarse=!c.activo; // puede activarse si activo=false, independientemente de fechas
     return`<div class="contrato-card ${esActivo?'activo':'inactivo'}">
       <div class="contrato-detail">
-        <div class="contrato-title"><span class="badge b-${c.tipo}">${TIPO_LABEL[c.tipo]||c.tipo}</span> · ${c.horas_semanales}h/semana ${esActivo?'<span style="color:var(--green);font-size:12px">● Activo ahora</span>':''}</div>
+        <div class="contrato-title"><span class="badge b-${c.tipo}">${TIPO_LABEL[c.tipo]||c.tipo}</span> · ${c.horas_semanales}h/semana ${esActivo?'<span style="color:var(--green);font-size:12px">● Activo ahora</span>':c.activo?'<span style="color:var(--amber);font-size:12px">● Activado (fuera de fechas)</span>':''}</div>
         <div class="contrato-sub">${fmtDate(c.fecha_inicio)} → ${c.fecha_fin?fmtDate(c.fecha_fin):'abierto'}${c.notas?' · '+c.notas:''}</div>
       </div>
       <div style="display:flex;gap:6px">
-        ${!esActivo?`<button class="btn sm approve" onclick="toggleContrato('${c.id}',true,'${empId}')">Activar</button>`:`<button class="btn sm deny" onclick="toggleContrato('${c.id}',false,'${empId}')">Desactivar</button>`}
+        ${puedeActivarse
+          ?`<button class="btn sm approve" onclick="toggleContrato('${c.id}',true,'${empId}')">Activar</button>`
+          :`<button class="btn sm deny" onclick="toggleContrato('${c.id}',false,'${empId}')">Desactivar</button>`}
         <button class="btn sm danger" onclick="eliminarContrato('${c.id}','${empId}')">Eliminar</button>
       </div>
     </div>`;
