@@ -752,8 +752,7 @@ async function exportarCSV(){
     }
   });
 
-  const csv='﻿'+rows.map(r=>r.map(c=>'"'+(c||'')+'"').join(',')).join('
-');
+  const csv='﻿'+rows.map(r=>r.map(c=>'"'+(c||'')+'"').join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='informe_jornada_'+new Date().toLocaleDateString('sv-SE')+'.csv';
@@ -842,7 +841,7 @@ async function enviarIncidencia(){
 
   // Buscar fichaje existente para esa fecha
   const f=await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${fecha}T00:00:00&entrada=lte.${fecha}T23:59:59&order=entrada.desc&limit=1`);
-  const fichaje=f&&f.length?f[0]:null;
+  let fichaje=f&&f.length?f[0]:null;
 
   const horaCorrecta=`${fecha}T${horaEntrada}:00`;
   const horaCorrectaSalida=horaSalida?`${fecha}T${horaSalida}:00`:null;
@@ -866,7 +865,7 @@ async function enviarIncidencia(){
     if(horaCorrectaSalida) newFichaje.salida=horaCorrectaSalida;
     if(c) newFichaje.contrato_id=c.id;
     const res=await sb('fichajes',{method:'POST',body:newFichaje});
-    if(res&&res.length) fichaje=res[0]; // no podemos reasignar const, pero se guarda abajo
+    if(res&&res.length) fichaje=res[0];
   }
 
   // Guardar incidencia con trazabilidad completa (estado aprobada = ya aplicada)
