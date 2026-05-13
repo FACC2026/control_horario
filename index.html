@@ -270,7 +270,38 @@ async function getContratoActivo(empleadoId){
   const hoy=new Date().toISOString().split('T')[0];
   const res=await sb(`contratos?empleado_id=eq.${empleadoId}&activo=eq.true&fecha_inicio=lte.${hoy}&order=fecha_inicio.desc&limit=10`);
   if(!res||!res.length)return null;
+  // Incluir contratos cuya fecha_fin es hoy o posterior, o sin fecha_fin
   return res.find(c=>!c.fecha_fin||c.fecha_fin>=hoy)||null;
+}
+
+// Versión rápida para el equipo (sin async individual)
+function contratoActivoDeHoy(contratos, empleadoId){
+  const hoy=new Date().toISOString().split('T')[0];
+  return (contratos||[]).filter(c=>
+    c.empleado_id===empleadoId &&
+    c.activo &&
+    c.fecha_inicio<=hoy &&
+    (!c.fecha_fin||c.fecha_fin>=hoy)
+  ).sort((a,b)=>b.fecha_inicio.localeCompare(a.fecha_inicio))[0]||null;
+}
+
+// Calcula horas previstas entre dos fechas teniendo en cuenta cambios de contrato
+// Para cada día laborable busca qué contrato estaba activo ese día
+function calcHorasPrevistas(contratos, fechaIni, fechaFin){
+  if(!contratos||!contratos.length) return 0;
+  let total=0;
+  const d=new Date(fechaIni);
+  const fin=new Date(fechaFin);
+  while(d<=fin){
+    const dow=d.getDay();
+    if(dow>=1&&dow<=5){
+      const ds=d.toISOString().split('T')[0];
+      const c=contratos.find(ct=>ct.fecha_inicio<=ds&&(!ct.fecha_fin||ct.fecha_fin>=ds));
+      if(c) total+=c.horas_semanales/5;
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return total;
 }
 
 async function init(){
@@ -394,8 +425,10 @@ async function cargarStatsEmp(){
   const mes=new Date(),ini=new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
   const f=await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&salida=not.is.null`);
   const tot=f?f.reduce((a,r)=>a+horasDiff(r.entrada,r.salida),0):0;
-  const jornada=contrato?(contrato.horas_semanales/5):8;
-  const prev=new Date().getDate()*jornada;const saldo=tot-prev;
+  // Calcular horas previstas día a día según el contrato de cada fecha
+  const todosContratos=await sb(`contratos?empleado_id=eq.${empActual.id}&order=fecha_inicio.asc`);
+  const prev=calcHorasPrevistas(todosContratos,new Date(mes.getFullYear(),mes.getMonth(),1),new Date());
+  const saldo=tot-prev;
   document.getElementById('statsEmp').innerHTML=`
     <div class="stat-card"><div class="lbl">Horas este mes</div><div class="val">${tot.toFixed(0)}</div><div class="sub">de ${Math.round(prev)} previstas</div></div>
     <div class="stat-card"><div class="lbl">Saldo</div><div class="val" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo.toFixed(1)}h</div><div class="sub">este mes</div></div>
@@ -409,10 +442,16 @@ async function cargarRegistro(){
   const f=await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&order=entrada.desc`);
   const tb=document.getElementById('regHistorico');
   if(!f||!f.length){tb.innerHTML='<tr><td colspan="5" class="empty">Sin registros</td></tr>';return}
-  const jornada=contrato?(contrato.horas_semanales/5):8;let tot=0;
-  tb.innerHTML=f.map(r=>{const h=r.salida?horasDiff(r.entrada,r.salida):null;if(h)tot+=h;const ok=h&&h>=jornada-0.25;
+  const todosContratos=await sb(`contratos?empleado_id=eq.${empActual.id}&order=fecha_inicio.asc`);
+  let tot=0;
+  tb.innerHTML=f.map(r=>{
+    const h=r.salida?horasDiff(r.entrada,r.salida):null;if(h)tot+=h;
+    // Jornada del día según el contrato vinculado al fichaje
+    const cDia=r.contrato_id?todosContratos.find(c=>c.id===r.contrato_id):null;
+    const jornadaDia=cDia?(cDia.horas_semanales/5):8;
+    const ok=h&&h>=jornadaDia-0.25;
     return`<tr><td>${fmtDate(r.entrada.split('T')[0])}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td><td><span class="badge ${ok?'b-aprobada':'b-denegada'}">${ok?'ok':'incompleto'}</span></td></tr>`}).join('');
-  const prev=new Date().getDate()*jornada,saldo=tot-prev,pct=Math.min(100,Math.round(tot/Math.max(prev,1)*100));
+  const prev=calcHorasPrevistas(todosContratos,new Date(mes.getFullYear(),mes.getMonth(),1),new Date()),saldo=tot-prev,pct=Math.min(100,Math.round(tot/Math.max(prev,1)*100));
   document.getElementById('saldoFill').style.cssText=`width:${pct}%;background:${saldo>=0?'var(--green)':'var(--red)'}`;
   document.getElementById('saldoVal').style.color=saldo>=0?'var(--green)':'var(--red)';
   document.getElementById('saldoVal').textContent=(saldo>=0?'+':'')+saldo.toFixed(1)+'h';
@@ -592,16 +631,21 @@ async function cargarInforme(){
   const contratos=await sb(`contratos?activo=eq.true&fecha_inicio=lte.${hoy}`);
   const contratoMap={};
   if(contratos)contratos.forEach(c=>{if(!contratoMap[c.empleado_id]&&(!c.fecha_fin||c.fecha_fin>=hoy))contratoMap[c.empleado_id]=c});
+  const todosContratos=await sb('contratos?order=empleado_id,fecha_inicio.asc');
+  const contratosPorEmp={};
+  todosContratos.forEach(c=>{if(!contratosPorEmp[c.empleado_id])contratosPorEmp[c.empleado_id]=[];contratosPorEmp[c.empleado_id].push(c)});
   const dias=new Date().getDate();
+  const iniMes=new Date(mes.getFullYear(),mes.getMonth(),1);
   document.getElementById('informeBody').innerHTML=emps.map(e=>{
     const myF=fich?fich.filter(f=>f.empleado_id===e.id):[];
     const realH=myF.reduce((a,f)=>a+horasDiff(f.entrada,f.salida),0);
+    const misContratos=contratosPorEmp[e.id]||[];
+    const prev=calcHorasPrevistas(misContratos,iniMes,new Date());
+    const saldo=realH-prev;
     const c=contratoMap[e.id];
-    const jornada=c?(c.horas_semanales/5):8;
-    const prev=dias*jornada;const saldo=realH-prev;
     const myA=aus?aus.filter(a=>a.empleado_id===e.id).reduce((a,s)=>a+s.dias,0):0;
     const[bg,tc]=avatarBg(e.nombre);
-    return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc};width:24px;height:24px;font-size:9px">${initials(e.nombre)}</div>${e.nombre}</div></td><td>${c?`<span class="badge b-${c.tipo}">${TIPO_LABEL[c.tipo]}</span> ${c.horas_semanales}h/sem`:'<span style="color:var(--red);font-size:12px">sin contrato</span>'}</td><td style="font-family:var(--mono);font-size:12px">${c?Math.round(prev)+'h':'—'}</td><td style="font-family:var(--mono);font-size:12px">${realH.toFixed(1)}h</td><td style="font-family:var(--mono);font-size:12px;color:${saldo>=0?'var(--green)':'var(--red)'}">${c?(saldo>=0?'+':'')+saldo.toFixed(1)+'h':'—'}</td><td style="font-size:12px">${myA>0?myA+'d':'—'}</td></tr>`;
+    return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${bg};color:${tc};width:24px;height:24px;font-size:9px">${initials(e.nombre)}</div>${e.nombre}</div></td><td>${c?`<span class="badge b-${c.tipo}">${TIPO_LABEL[c.tipo]}</span> ${c.horas_semanales}h/sem`:'<span style="color:var(--red);font-size:12px">sin contrato</span>'}</td><td style="font-family:var(--mono);font-size:12px">${prev>0?prev.toFixed(1)+'h':'—'}</td><td style="font-family:var(--mono);font-size:12px">${realH.toFixed(1)}h</td><td style="font-family:var(--mono);font-size:12px;color:${saldo>=0?'var(--green)':'var(--red)'}">${prev>0?(saldo>=0?'+':'')+saldo.toFixed(1)+'h':'—'}</td><td style="font-size:12px">${myA>0?myA+'d':'—'}</td></tr>`;
   }).join('');
 }
 
