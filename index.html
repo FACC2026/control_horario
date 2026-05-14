@@ -137,7 +137,7 @@ svg.icon{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;str
       <!-- REGISTRO -->
       <div id="page-registro" style="display:none">
         <div class="saldo-row"><span style="font-size:11px;font-family:var(--mono);color:var(--text3)">SALDO MES</span><div class="saldo-track"><div class="saldo-fill" id="saldoFill" style="width:0%"></div></div><span id="saldoVal" style="font-family:var(--mono);font-size:13px;min-width:70px;text-align:right">—</span></div>
-        <div class="card" style="padding:0 1.25rem"><table class="tbl"><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Estado</th><th></th></tr></thead><tbody id="regHistorico"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
+        <div class="card" style="padding:0 1.25rem"><table class="tbl"><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Fichaje</th><th></th></tr></thead><tbody id="regHistorico"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
       </div>
 
       <!-- PERMISOS -->
@@ -500,18 +500,44 @@ async function cargarStatsEmp(){
 async function cargarRegistro(){
   const contrato=empActual._contratoActivo;
   const mes=new Date(),ini=new Date(mes.getFullYear(),mes.getMonth(),1).toISOString();
-  const f=await sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&order=entrada.desc`);
+  const [f, incs] = await Promise.all([
+    sb(`fichajes?empleado_id=eq.${empActual.id}&entrada=gte.${ini}&order=entrada.desc`),
+    sb(`incidencias_fichaje?empleado_id=eq.${empActual.id}&estado=eq.aprobada&order=creado_en.desc`)
+  ]);
   const tb=document.getElementById('regHistorico');
-  if(!f||!f.length){tb.innerHTML='<tr><td colspan="5" class="empty">Sin registros</td></tr>';return}
+  if(!f||!f.length){tb.innerHTML='<tr><td colspan="6" class="empty">Sin registros</td></tr>';return}
   const todosContratos=await sb(`contratos?empleado_id=eq.${empActual.id}&order=fecha_inicio.asc`);
+  // Mapa de incidencias por fichaje_id
+  const incMap={};
+  if(incs)incs.forEach(i=>{if(!incMap[i.fichaje_id])incMap[i.fichaje_id]=[];incMap[i.fichaje_id].push(i)});
   let tot=0;
   tb.innerHTML=f.map(r=>{
     const h=r.salida?horasDiff(r.entrada,r.salida):null;if(h)tot+=h;
-    // Jornada del día según el contrato vinculado al fichaje
     const cDia=r.contrato_id?todosContratos.find(c=>c.id===r.contrato_id):null;
     const jornadaDia=cDia?(cDia.horas_semanales/5):8;
     const ok=h&&h>=jornadaDia-0.25;
-    return`<tr><td>${fmtDate(fechaDeTS(r.entrada))}</td><td><span class="time-tag">${fmtHM(r.entrada)}</span></td><td>${r.salida?'<span class="time-tag">'+fmtHM(r.salida)+'</span>':'<span style="color:var(--text3);font-size:12px">pendiente</span>'}</td><td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td><td><span class="badge ${ok?'b-aprobada':'b-denegada'}">${ok?'ok':'incompleto'}</span></td><td><button class="btn sm" style="padding:3px 8px;font-size:11px" onclick="abrirIncidenciaDesdeRegistro('${fechaDeTS(r.entrada)}','${r.id}')">⚠ Incidencia</button></td></tr>`}).join('');
+    const misIncs=incMap[r.id]||[];
+    const tieneIncEntrada=misIncs.some(i=>i.tipo==='entrada'||i.tipo==='fichaje_completo');
+    const tieneIncSalida=misIncs.some(i=>i.tipo==='salida'||i.tipo==='fichaje_completo');
+    const tagEntrada=tieneIncEntrada
+      ?`<span class="time-tag" style="background:var(--red-bg);color:var(--red)" title="Corregido por incidencia · original: ${misIncs.find(i=>i.tipo==='entrada'||i.tipo==='fichaje_completo')?.hora_anterior?fmtHM(misIncs.find(i=>i.tipo==='entrada'||i.tipo==='fichaje_completo').hora_anterior):'sin fichaje'}">⚠ ${fmtHM(r.entrada)}</span>`
+      :`<span class="time-tag" style="background:var(--green-bg);color:var(--green)">${fmtHM(r.entrada)}</span>`;
+    const tagSalida=r.salida
+      ?(tieneIncSalida
+        ?`<span class="time-tag" style="background:var(--red-bg);color:var(--red)" title="Corregido por incidencia · original: ${misIncs.find(i=>i.tipo==='salida'||i.tipo==='fichaje_completo')?.hora_anterior?fmtHM(misIncs.find(i=>i.tipo==='salida'||i.tipo==='fichaje_completo').hora_anterior):'sin fichaje'}">⚠ ${fmtHM(r.salida)}</span>`
+        :`<span class="time-tag" style="background:var(--green-bg);color:var(--green)">${fmtHM(r.salida)}</span>`)
+      :'<span style="color:var(--text3);font-size:12px">pendiente</span>';
+    const estadoFichaje=misIncs.length>0
+      ?`<span class="badge b-pendiente" title="${misIncs.map(i=>MOTIVOS_LABEL[i.motivo]||i.motivo).join(', ')}">⚠ incidencia</span>`
+      :`<span class="badge b-aprobada">✓ correcto</span>`;
+    return`<tr>
+      <td>${fmtDate(fechaDeTS(r.entrada))}</td>
+      <td>${tagEntrada}</td>
+      <td>${tagSalida}</td>
+      <td class="${ok?'horas-ok':'horas-ko'}">${h?h.toFixed(1)+'h':'—'}</td>
+      <td>${estadoFichaje}</td>
+      <td><button class="btn sm" style="padding:3px 8px;font-size:11px" onclick="abrirIncidenciaDesdeRegistro('${fechaDeTS(r.entrada)}','${r.id}')">⚠ Incidencia</button></td>
+    </tr>`;}).join('');
   const iniMesR=new Date(mes.getFullYear(),mes.getMonth(),1);
   const finMesR=new Date(mes.getFullYear(),mes.getMonth()+1,0);
   const prev=calcHorasMes(todosContratos,iniMesR,finMesR);
